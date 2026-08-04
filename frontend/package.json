@@ -1,41 +1,33 @@
 {
-  "name": "frontend",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "lint": "run-s \"lint:*\"",
-    "lint:oxlint": "oxlint . --fix",
-    "lint:eslint": "eslint . --fix --cache",
-    "format": "prettier --write --experimental-cli src/"
-  },
-  "dependencies": {
-    "@primeuix/themes": "^3.0.0",
-    "pinia": "^4.0.2",
-    "primeicons": "^8.0.0",
-    "primevue": "^5.0.0",
-    "vue": "^3.5.40",
-    "vue-router": "^5.2.0"
-  },
-  "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@vitejs/plugin-vue": "^6.0.8",
-    "eslint": "^10.7.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-oxlint": "~1.73.0",
-    "eslint-plugin-vue": "~10.9.2",
-    "globals": "^17.7.0",
-    "npm-run-all2": "^9.0.2",
-    "oxlint": "~1.73.0",
-    "prettier": "3.9.5",
-    "vite": "^8.1.5",
-    "vite-plugin-vue-devtools": "^8.1.5",
-    "vue-eslint-parser": "^10.4.1"
-  },
-  "engines": {
-    "node": "^22.18.0 || >=24.12.0"
-  }
+    "name": "SmartStore",
+    "version": "4.3.0",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "lint": "eslint --fix . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
+    },
+    "dependencies": {
+        "@primeuix/themes": "^2.0.0",
+        "chart.js": "3.3.2",
+        "primeicons": "^7.0.0",
+        "primevue": "^4.5.5",
+        "tailwindcss-primeui": "^0.6.0",
+        "vue": "^3.4.34",
+        "vue-router": "^4.4.0"
+    },
+    "devDependencies": {
+        "@primevue/auto-import-resolver": "^4.3.1",
+        "@rushstack/eslint-patch": "^1.8.0",
+        "@tailwindcss/vite": "^4.1.17",
+        "@vitejs/plugin-vue": "^5.0.5",
+        "@vue/eslint-config-prettier": "^9.0.0",
+        "eslint": "^8.57.0",
+        "eslint-plugin-vue": "^9.23.0",
+        "prettier": "^3.2.5",
+        "sass": "^1.55.0",
+        "tailwindcss": "^4.1.17",
+        "unplugin-vue-components": "^0.27.3",
+        "vite": "^5.3.1"
+    }
 }
