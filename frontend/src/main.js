@@ -1,6 +1,6 @@
 import { createApp } from 'vue';
 import App from './App.vue';
-import router from './router';
+import router from './core/router/index.js';
 
 import Aura from '@primeuix/themes/aura';
 import PrimeVue from 'primevue/config';
