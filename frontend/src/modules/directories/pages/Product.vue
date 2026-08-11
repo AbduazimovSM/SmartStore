@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <ProductMenu />
+    <div class="card">
+        <ProductMenu class="mb-8"/>
 
         <h2>Номенклатура</h2>
     </div>

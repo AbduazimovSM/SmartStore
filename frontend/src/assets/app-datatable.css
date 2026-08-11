@@ -253,7 +253,7 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
-     height: calc(100vh - 180px);
+     height: calc(100vh - 297px);
 }
 
 .base-table__content {
