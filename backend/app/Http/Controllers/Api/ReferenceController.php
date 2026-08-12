@@ -8,15 +8,20 @@ use App\Models\Reference;
 
 class ReferenceController extends Controller
 {
-
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $query = Reference::query();
 
         if ($request->filled('type')) {
             $query->where('type', $request->query('type'));
         }
 
-        $references = $query->orderBy('name')->get();
+        $perPage = $request->integer('per_page', 10);
+
+        $sortField = $request->query('sort_field', 'name');
+        $sortOrder = $request->query('sort_order', 'asc');
+
+        $references = $query->orderBy($sortField, $sortOrder)->paginate($perPage);
 
         return response()->json([
             'success' => true,

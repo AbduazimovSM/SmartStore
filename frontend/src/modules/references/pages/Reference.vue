@@ -1,99 +1,100 @@
 <template>
-    <div>
-        <div class="card">
-            <ProductMenu class="mb-8" />
-            <Toolbar>
+    <div class="card">
+        <ProductMenu class="mb-8" />
+        <Toolbar style="border-radius: 0">
+            <template #start>
+                <Button label="Добавить" icon="pi pi-plus" severity="success" class="mr-2" @click="addReference" />
+                <Button icon="pi pi-trash" severity="danger" :disabled="!selectedReferences.length" @click="confirmDeleteReferences">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                    </svg>
+                </Button>
+            </template>
+
+            <template #end>
+                <IconField iconPosition="left">
+                    <InputIcon>
+                        <i class="pi pi-search" />
+                    </InputIcon>
+                    <InputText placeholder="Search..." />
+                </IconField>
+            </template>
+        </Toolbar>
+        <div class="table-wrapper">
+            <DataTable 
+                ref="dt" 
+                class="base-table text-center" 
+                v-model:selection="selectedReferences" 
+                :value="references" :loading="loading" 
+                showGridlines 
+                data-key="id" 
+                columnResizeMode="fit"
+                resizableColumns 
+                >
+                <template #empty>
+                    <p class="text-center">Данные не найдены</p>
+                </template>
+
+                <Column selection-mode="multiple" style="width: 3rem" :exportable="false" />
+
+                <Column field="id" header="ID" sortable />
+
+                <Column field="name" header="Наименование" sortable />
+
+                <Column v-if="type === 'category'" field="parent_id" header="Родительская категория" sortable>
+                    <template #body="{ data }">
+                        {{ data.parent_id ?? '' }}
+                    </template>
+                </Column>
+
+                <Column v-if="type === 'unit'" field="short_name" header="Краткое название" sortable>
+                    <template #body="{ data }">
+                        {{ data.short_name || '' }}
+                    </template>
+                </Column>
+
+                <Column field="description" header="Примичание" sortable>
+                    <template #body="{ data }">
+                        {{ data.description || '' }}
+                    </template>
+                </Column>
+
+                <Column field="status" header="Статус" sortable>
+                    <template #body="{ data }">
+                        <Tag :value="data.status ? 'Активен' : 'Неактивен'"
+                            :severity="data.status ? 'success' : 'danger'" />
+                    </template>
+                </Column>
+
+                <Column header="Действия" :exportable="false">
+                    <template #body="{ data }">
+                        <Button icon="pi pi-ellipsis-h" rounded text severity="secondary" aria-label="Действия"
+                            @click="openActionsMenu($event, data)" />
+                    </template>
+                </Column>
+
+                <Menu ref="actionsMenu" :model="actionItems" :popup="true" />
+            </DataTable>
+            <Paginator class="isp-paginator" style="border: 1px solid var(--surface-border)" :rows="rows" :first="first"
+                :totalRecords="total" :rowsPerPageOptions="[5, 10, 25, 50, 100]"
+                template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown JumpToPageInput"
+                @page="onPage">
+
                 <template #start>
-                    <Button label="Добавить" icon="pi pi-plus" severity="success" class="mr-2" @click="addReference" />
-                    <Button icon="pi pi-trash" severity="danger" :disabled="!selectedReferences.length"
-                        @click="confirmDeleteReferences">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                            class="bi bi-trash" viewBox="0 0 16 16">
-                            <path
-                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
-                            <path
-                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
-                        </svg>
-                    </Button>
+                    Показаны с {{ first + 1 }}
+                    по {{ Math.min(first + rows, total) }}
+                    из {{ total }} записей
                 </template>
 
                 <template #end>
-                    <IconField iconPosition="left">
-                        <InputIcon>
-                            <i class="pi pi-search" />
-                        </InputIcon>
-                        <InputText placeholder="Search..." />
-                    </IconField>
+                    <Button type="button" icon="pi pi-refresh" text />
+                    <Button icon="pi pi-plus" class="mr-2" severity="secondary" text />
+                    <Button icon="pi pi-print" class="mr-2" severity="secondary" text />
+                    <Button icon="pi pi-upload" severity="secondary" text />
+                    <Button type="button" icon="pi pi-download" text />
                 </template>
-            </Toolbar>
-            <div class="table-wrapper">
-                <DataTable class="base-table" ref="dt" v-model:selection="selectedReferences" :value="references"
-                    :loading="loading" showGridlines data-key="id" resizableColumns columnResizeMode="fit">
-
-                    <template #empty>
-                        <p class="text-center">Данные не найдены</p>
-                    </template>
-
-                    <Column selection-mode="multiple" style="width: 3rem" :exportable="false" />
-
-                    <Column field="id" header="ID" sortable />
-
-                    <Column field="name" header="Наименование" sortable />
-
-                    <Column v-if="type === 'category'" field="parent_id" header="Родительская категория" sortable>
-                        <template #body="{ data }">
-                            {{ data.parent_id ?? '' }}
-                        </template>
-                    </Column>
-
-                    <Column v-if="type === 'unit'" field="short_name" header="Краткое название" sortable>
-                        <template #body="{ data }">
-                            {{ data.short_name || '' }}
-                        </template>
-                    </Column>
-
-                    <Column field="description" header="Примичание" sortable>
-                        <template #body="{ data }">
-                            {{ data.description || '' }}
-                        </template>
-                    </Column>
-
-                    <Column field="status" header="Статус" sortable>
-                        <template #body="{ data }">
-                            <Tag :value="data.status ? 'Активен' : 'Неактивен'"
-                                :severity="data.status ? 'success' : 'danger'" />
-                        </template>
-                    </Column>
-
-                    <Column header="Действия" :exportable="false">
-                        <template #body="{ data }">
-                            <Button icon="pi pi-ellipsis-h" rounded text severity="secondary" aria-label="Действия"
-                                @click="openActionsMenu($event, data)" />
-                        </template>
-                    </Column>
-
-                    <Menu ref="actionsMenu" :model="actionItems" :popup="true" />
-                </DataTable>
-                <Paginator class="isp-paginator" style="border: 1px solid var(--surface-border)" :rows="rows"
-                    :first="first" :totalRecords="total" :rowsPerPageOptions="[5, 10, 25, 50, 100]"
-                    template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown JumpToPageInput"
-                    @page="onPage">
-
-                    <template #start="slotProps">
-                        Page: {{ slotProps.state.page }}
-                        First: {{ slotProps.state.first }}
-                        Rows: {{ slotProps.state.rows }}
-                    </template>
-
-                    <template #end>
-                        <Button type="button" icon="pi pi-refresh" text />
-                        <Button icon="pi pi-plus" class="mr-2" severity="secondary" text />
-                        <Button icon="pi pi-print" class="mr-2" severity="secondary" text />
-                        <Button icon="pi pi-upload" severity="secondary" text />
-                        <Button type="button" icon="pi pi-download" text />
-                    </template>
-                </Paginator>
-            </div>
+            </Paginator>
         </div>
 
         <Dialog v-model:visible="referenceDialog" maximizable :style="{ width: '450px' }" :header="dialogTitle" modal
@@ -167,8 +168,7 @@
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl text-yellow-500" />
                 <span>
-                    Удалить выбранные записи:
-                    <b>{{ selectedReferences.length }}</b>?
+                    Удалить <b>{{ selectedReferences.length }}</b> выбранные записи?
                 </span>
             </div>
 
@@ -231,8 +231,7 @@ const loading = ref(false);
 const submitted = ref(false);
 const rows = ref(10);
 const first = ref(0);
-
-const total = computed(() => references.value.length);
+const total = ref(0);
 
 
 const referenceDialog = ref(false);
@@ -264,9 +263,11 @@ const statuses = [
     { label: 'Неактивен', value: false }
 ];
 
-function onPage(event) {
+async function onPage(event) {
     first.value = event.first;
     rows.value = event.rows;
+
+    await loadReferences();
 }
 
 function emptyReference() {
@@ -282,13 +283,25 @@ function emptyReference() {
 
 async function loadReferences() {
     loading.value = true;
+
     try {
-        const response = await getReferences(type.value);
-        references.value = response.data.data;
+        const page = first.value / rows.value + 1;
+
+        const response = await getReferences(
+            type.value,
+            page,
+            rows.value
+        );
+
+        references.value = response.data.data.data;
+        total.value = response.data.data.total;
 
     } catch (error) {
         console.error('Ответ ошибки:', error.response?.data);
+
         references.value = [];
+        total.value = 0;
+
     } finally {
         loading.value = false;
     }

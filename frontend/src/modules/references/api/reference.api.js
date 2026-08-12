@@ -1,8 +1,12 @@
 import http from '@/core/api/http';
 
-export function getReferences(type) {
+export function getReferences(type, page = 1, perPage = 10) {
     return http.get('/references', {
-        params: { type }
+        params: {
+            type,
+            page,
+            per_page: perPage
+        }
     });
 }
 

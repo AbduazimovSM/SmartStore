@@ -59,8 +59,8 @@
     flex: 1;
     min-width: 0;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    /* text-overflow: ellipsis; */
+    /* white-space: nowrap; */
 }
 
 .p-datatable .p-selection-column {
@@ -256,12 +256,7 @@
      height: calc(100vh - 297px);
 }
 
-.base-table__content {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-}
+
 
 
 
