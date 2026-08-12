@@ -1,5 +1,5 @@
 <template>
-    <div class="card">
+    <div class="card reference-page-card">
         <ProductMenu class="mb-8" />
         <Toolbar style="border-radius: 0">
             <template #start>
@@ -27,8 +27,10 @@
         </Toolbar>
         <div class="table-wrapper">
             <DataTable ref="dt" class="base-table text-center" v-model:selection="selectedReferences"
-                :value="references" :loading="loading" showGridlines data-key="id" columnResizeMode="fit"
-                resizableColumns lazy :sortField="sortField" :sortOrder="sortOrder === 'asc' ? 1 : -1" @sort="onSort">
+                :value="references" :loading="loading" showGridlines data-key="id" columnResizeMode="fit" scrollable scrollHeight="flex"
+                :tableStyle="{ minWidth: '760px' }"
+                 resizableColumns lazy :sortField="sortField"
+                :sortOrder="sortOrder === 'asc' ? 1 : -1" @sort="onSort">
                 <template #empty>
                     <p class="text-center">Данные не найдены</p>
                 </template>
@@ -39,9 +41,9 @@
 
                 <Column field="name" header="Наименование" sortable />
 
-                <Column v-if="type === 'category'" field="parent_id" header="Родительская категория" sortable>
+                <Column v-if="type === 'category'" field="parent_id" header="Род.категория" sortable>
                     <template #body="{ data }">
-                        {{ data.parent_id ?? '' }}
+                        {{ getParentCategoryName(data.parent_id) }}
                     </template>
                 </Column>
 
@@ -134,7 +136,7 @@
             </div>
 
             <!-- <template #footer> -->
-            <div class="flex justify-content-center">
+            <div class="reference-dialog-actions">
                 <Button label="Отмена" icon="pi pi-times" text @click="hideDialog" />
                 <Button label="Сохранить" icon="pi pi-check" text @click="saveReference" />
             </div>
@@ -364,6 +366,18 @@ async function loadParentCategories() {
         ''
     );
     parentCategories.value = response.data.data.data;
+}
+
+function getParentCategoryName(parentId) {
+    if (!parentId) {
+        return '';
+    }
+
+    const parent = parentCategories.value.find(
+        category => category.id === parentId
+    );
+
+    return parent?.name || '';
 }
 
 function addReference() {
