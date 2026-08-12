@@ -1,11 +1,14 @@
 import http from '@/core/api/http';
 
-export function getReferences(type, page = 1, perPage = 10) {
+export function getReferences(type, page = 1, perPage = 10, sortField = 'name', sortOrder = 'asc', search = '') {
     return http.get('/references', {
         params: {
             type,
             page,
-            per_page: perPage
+            per_page: perPage,
+            sort_field: sortField,
+            sort_order: sortOrder,
+            search
         }
     });
 }

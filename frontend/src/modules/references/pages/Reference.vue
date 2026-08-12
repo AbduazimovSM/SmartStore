@@ -4,10 +4,14 @@
         <Toolbar style="border-radius: 0">
             <template #start>
                 <Button label="Добавить" icon="pi pi-plus" severity="success" class="mr-2" @click="addReference" />
-                <Button icon="pi pi-trash" severity="danger" :disabled="!selectedReferences.length" @click="confirmDeleteReferences">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
-                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                <Button icon="pi pi-trash" severity="danger" :disabled="!selectedReferences.length"
+                    @click="confirmDeleteReferences">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                        class="bi bi-trash" viewBox="0 0 16 16">
+                        <path
+                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                        <path
+                            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
                     </svg>
                 </Button>
             </template>
@@ -17,21 +21,14 @@
                     <InputIcon>
                         <i class="pi pi-search" />
                     </InputIcon>
-                    <InputText placeholder="Search..." />
+                    <InputText v-model="search" placeholder="Search..." @input="onSearch" />
                 </IconField>
             </template>
         </Toolbar>
         <div class="table-wrapper">
-            <DataTable 
-                ref="dt" 
-                class="base-table text-center" 
-                v-model:selection="selectedReferences" 
-                :value="references" :loading="loading" 
-                showGridlines 
-                data-key="id" 
-                columnResizeMode="fit"
-                resizableColumns 
-                >
+            <DataTable ref="dt" class="base-table text-center" v-model:selection="selectedReferences"
+                :value="references" :loading="loading" showGridlines data-key="id" columnResizeMode="fit"
+                resizableColumns lazy :sortField="sortField" :sortOrder="sortOrder === 'asc' ? 1 : -1" @sort="onSort">
                 <template #empty>
                     <p class="text-center">Данные не найдены</p>
                 </template>
@@ -88,11 +85,8 @@
                 </template>
 
                 <template #end>
-                    <Button type="button" icon="pi pi-refresh" text />
-                    <Button icon="pi pi-plus" class="mr-2" severity="secondary" text />
-                    <Button icon="pi pi-print" class="mr-2" severity="secondary" text />
-                    <Button icon="pi pi-upload" severity="secondary" text />
-                    <Button type="button" icon="pi pi-download" text />
+                    <Button type="button" icon="pi pi-refresh" @click="loadReferences" text />
+                    <Button type="button" icon="pi pi-download" text @click="exportExcel" />
                 </template>
             </Paginator>
         </div>
@@ -187,6 +181,7 @@ import { useRoute } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import '@/assets/app-datatable.css';
 import ProductMenu from '@/modules/directories/components/ProductMenu.vue';
+import * as XLSX from 'xlsx';
 import {
     getReferences,
     createReference,
@@ -229,10 +224,47 @@ const parentCategories = ref([]);
 
 const loading = ref(false);
 const submitted = ref(false);
+
 const rows = ref(10);
 const first = ref(0);
 const total = ref(0);
+const sortField = ref('name');
+const sortOrder = ref('asc');
+const search = ref('');
+let searchTimer = null;
 
+function onSearch() {
+    clearTimeout(searchTimer);
+
+    searchTimer = setTimeout(async () => {
+        first.value = 0;
+        await loadReferences();
+    }, 400);
+}
+function exportExcel() {
+    const data = references.value.map(item => ({
+        ID: item.id,
+        'Наименование': item.name,
+        'Краткое название': item.short_name || '',
+        'Примечание': item.description || '',
+        'Статус': item.status ? 'Активен' : 'Неактивен'
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        'Справочник'
+    );
+
+    XLSX.writeFile(
+        workbook,
+        `${type.value}.xlsx`
+    );
+}
 
 const referenceDialog = ref(false);
 const deleteReferenceDialog = ref(false);
@@ -263,6 +295,15 @@ const statuses = [
     { label: 'Неактивен', value: false }
 ];
 
+async function onSort(event) {
+    sortField.value = event.sortField;
+    sortOrder.value = event.sortOrder === 1 ? 'asc' : 'desc';
+
+    first.value = 0;
+
+    await loadReferences();
+}
+
 async function onPage(event) {
     first.value = event.first;
     rows.value = event.rows;
@@ -290,7 +331,10 @@ async function loadReferences() {
         const response = await getReferences(
             type.value,
             page,
-            rows.value
+            rows.value,
+            sortField.value,
+            sortOrder.value,
+            search.value
         );
 
         references.value = response.data.data.data;
@@ -298,10 +342,8 @@ async function loadReferences() {
 
     } catch (error) {
         console.error('Ответ ошибки:', error.response?.data);
-
         references.value = [];
         total.value = 0;
-
     } finally {
         loading.value = false;
     }
@@ -313,8 +355,15 @@ async function loadParentCategories() {
         return;
     }
 
-    const response = await getReferences('category');
-    parentCategories.value = response.data.data;
+    const response = await getReferences(
+        'category',
+        1,
+        100,
+        'name',
+        'asc',
+        ''
+    );
+    parentCategories.value = response.data.data.data;
 }
 
 function addReference() {
@@ -449,6 +498,9 @@ watch(
     async () => {
         selectedReferences.value = [];
         reference.value = emptyReference();
+
+        first.value = 0;
+        search.value = '';
 
         await loadReferences();
         await loadParentCategories();

@@ -8,28 +8,82 @@ use App\Models\Reference;
 
 class ReferenceController extends Controller
 {
-    public function index(Request $request)
-    {
-        $query = Reference::query();
+public function index(Request $request)
+{
+    $query = Reference::query();
 
-        if ($request->filled('type')) {
-            $query->where('type', $request->query('type'));
-        }
+    $type = $request->query('type');
 
-        $perPage = $request->integer('per_page', 10);
-
-        $sortField = $request->query('sort_field', 'name');
-        $sortOrder = $request->query('sort_order', 'asc');
-
-        $references = $query->orderBy($sortField, $sortOrder)->paginate($perPage);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Успешно получили данные!',
-            'data' => $references
-        ], 200);
+    if ($request->filled('type')) {
+        $query->where('type', $type);
     }
 
+    if ($request->filled('search')) {
+        $search = trim($request->query('search'));
+
+        $searchFields = [
+            'id',
+            'name',
+            'code',
+            'description',
+        ];
+
+        if ($type === 'unit') {
+            $searchFields[] = 'short_name';
+        }
+
+        if ($type === 'category') {
+            $searchFields[] = 'parent_id';
+        }
+
+        $query->where(function ($q) use ($search, $searchFields) {
+            foreach ($searchFields as $field) {
+                $q->orWhere($field, 'like', "%{$search}%");
+            }
+        });
+    }
+
+    $perPage = $request->integer('per_page', 10);
+
+    $allowedSortFields = [
+        'id',
+        'name',
+        'code',
+        'description',
+        'status',
+    ];
+
+    if ($type === 'unit') {
+        $allowedSortFields[] = 'short_name';
+    }
+
+    if ($type === 'category') {
+        $allowedSortFields[] = 'parent_id';
+    }
+
+    $sortField = $request->query('sort_field', 'name');
+
+    if (!in_array($sortField, $allowedSortFields, true)) {
+        $sortField = 'name';
+    }
+
+    $sortOrder = strtolower($request->query('sort_order', 'asc'));
+
+    if (!in_array($sortOrder, ['asc', 'desc'], true)) {
+        $sortOrder = 'asc';
+    }
+
+    // Сортировка + пагинация
+    $references = $query
+        ->orderBy($sortField, $sortOrder)
+        ->paginate($perPage);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Успешно получили данные!',
+        'data' => $references,
+    ], 200);
+}
 
     public function store(Request $request){
         $validated = $request->validate([
