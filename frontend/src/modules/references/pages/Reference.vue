@@ -132,6 +132,7 @@ const loading = ref(false);
 const loadingDeleteReference = ref(false);
 const loadingDeleteReferences = ref(false);
 const actionsMenu = ref(null);
+
 const type = computed(() => route.query.type || 'category');
 const actionItems = [
     {
