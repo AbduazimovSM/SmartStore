@@ -94,42 +94,8 @@
         </div>
 
         <ReferenceDialog />
-
-
-        <Dialog v-model:visible="deleteReferenceDialog" :style="{ width: '450px' }" header="Подтверждение" modal>
-            <div class="confirmation-content">
-                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-
-                <span>
-                    Удалить
-                    <b>{{ reference.name }}</b>?
-                </span>
-            </div>
-
-            <template #footer>
-                <Button label="Нет" icon="pi pi-times" text :disabled="deletingReference"
-                    @click="deleteReferenceDialog = false" />
-
-                <Button label="Да" icon="pi pi-check" text :loading="deletingReference"
-                    :disabled="deletingReference" @click="destroyReference" />
-            </template>
-        </Dialog>
-
-        <Dialog v-model:visible="deleteReferencesDialog" :style="{ width: '450px' }" header="Подтверждение" modal>
-            <div class="flex items-center gap-4">
-                <i class="pi pi-exclamation-triangle !text-3xl text-yellow-500" />
-                <span>
-                    Удалить <b>{{ selectedReferences.length }}</b> выбранные записи?
-                </span>
-            </div>
-
-            <template #footer>
-                <Button label="Нет" icon="pi pi-times" text :disabled="deletingReferences"
-                    @click="deleteReferencesDialog = false" />
-                <Button label="Да" icon="pi pi-check" text :loading="deletingReferences"
-                    :disabled="deletingReferences" @click="destroyReferences" />
-            </template>
-        </Dialog>
+        <DeleteReferenceDialog  v-model="deleteReferenceDialog" :item-name="reference?.name" :loading="deletingReference" @confirm="destroyReference"/>
+        <DeleteReferencesDialog v-model="deleteReferencesDialog" :count="selectedReferences.length" :loading="deletingReferences" @confirm="destroyReferences"/>
     </div>
 
 </template>
@@ -147,8 +113,10 @@ import {
     deleteReferences
 } from '@/modules/references/api/reference.api';
 import ReferenceDialog from '@/modules/references/components/ReferenceDialog.vue';
-import { useReferenceDialogStore } from '@/modules/references/stores/referenceDialog.store';
 
+import DeleteReferencesDialog from '@/modules/references/components/DeleteReferencesDialog.vue';
+import DeleteReferenceDialog from '@/modules/references/components/DeleteReferenceDialog.vue';
+import { useReferenceDialogStore } from '@/modules/references/stores/referenceDialog.store';
 const dialogStore = useReferenceDialogStore();
 
 const route = useRoute();
