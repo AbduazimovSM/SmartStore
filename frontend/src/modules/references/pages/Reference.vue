@@ -3,7 +3,7 @@
         <ProductMenu class="mb-8" />
         <Toolbar style="border-radius: 0">
             <template #start>
-                <Button label="Добавить" icon="pi pi-plus" severity="success" class="mr-2" @click="addReference" />
+                <Button label="Добавить" icon="pi pi-plus" class="mr-2" @click="addReference" />
                 <Button icon="pi pi-trash" severity="danger" :disabled="!selectedReferences.length"
                     @click="confirmDeleteReferences">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
