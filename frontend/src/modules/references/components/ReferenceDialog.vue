@@ -1,0 +1,247 @@
+<template>
+    <Dialog
+        v-model:visible="dialogStore.visible"
+        maximizable
+        :style="{ width: '450px' }"
+        :header="dialogTitle"
+        modal
+        class="p-fluid"
+    >
+        <div>
+            <FloatLabel variant="on" class="mt-2">
+                <InputText
+                    id="name"
+                    v-model.trim="reference.name"
+                    autofocus
+                    :invalid="submitted && !reference.name"
+                    fluid
+                />
+
+                <label for="name">Наименование</label>
+            </FloatLabel>
+
+            <small
+                v-if="submitted && !reference.name"
+                class="p-error"
+            >
+                Наименование обязательно
+            </small>
+        </div>
+
+        <div v-if="dialogStore.type === 'category'" class="field">
+            <FloatLabel variant="on" class="mt-4">
+                <Select
+                    id="parent_id"
+                    v-model="reference.parent_id"
+                    :options="parentCategories"
+                    option-label="name"
+                    option-value="id"
+                    show-clear
+                    fluid
+                />
+
+                <label for="parent_id">
+                    Родительская категория
+                </label>
+            </FloatLabel>
+        </div>
+
+        <div v-if="dialogStore.type === 'unit'" class="field">
+            <FloatLabel variant="on" class="mt-4">
+                <InputText
+                    id="short_name"
+                    v-model.trim="reference.short_name"
+                    fluid
+                />
+
+                <label for="short_name">
+                    Краткое название
+                </label>
+            </FloatLabel>
+        </div>
+
+        <div class="field">
+            <FloatLabel variant="on" class="mt-4">
+                <Textarea
+                    id="description"
+                    v-model="reference.description"
+                    rows="3"
+                    fluid
+                />
+
+                <label for="description">
+                    Описание
+                </label>
+            </FloatLabel>
+        </div>
+
+        <div class="field">
+            <FloatLabel variant="on" class="mt-4">
+                <Select
+                    id="status"
+                    v-model="reference.status"
+                    :options="statuses"
+                    option-label="label"
+                    option-value="value"
+                    fluid
+                />
+
+                <label for="status">
+                    Статус
+                </label>
+            </FloatLabel>
+        </div>
+
+        <div class="reference-dialog-actions">
+            <Button
+                label="Отмена"
+                icon="pi pi-times"
+                text
+                :disabled="saving"
+                @click="dialogStore.close"
+            />
+
+            <Button
+                label="Сохранить"
+                icon="pi pi-check"
+                text
+                :loading="saving"
+                :disabled="saving"
+                @click="saveReference"
+            />
+        </div>
+    </Dialog>
+</template>
+
+<script setup>
+import { computed, ref, watch } from 'vue';
+import { useToast } from 'primevue/usetoast';
+
+import {
+    getReferences,
+    createReference,
+    updateReference
+} from '@/modules/references/api/reference.api';
+
+import { useReferenceDialogStore } from '@/modules/references/stores/referenceDialog.store';
+
+const dialogStore = useReferenceDialogStore();
+const toast = useToast();
+
+const reference = ref({});
+const parentCategories = ref([]);
+
+const submitted = ref(false);
+const saving = ref(false);
+
+const statuses = [
+    { label: 'Активен', value: true },
+    { label: 'Неактивен', value: false }
+];
+
+const dialogTitle = computed(() => {
+    return reference.value.id
+        ? 'Редактировать'
+        : 'Добавить';
+});
+
+function emptyReference() {
+    return {
+        type: dialogStore.type,
+        name: '',
+        short_name: null,
+        parent_id: null,
+        description: '',
+        status: true
+    };
+}
+
+async function loadParentCategories() {
+    if (dialogStore.type !== 'category') {
+        parentCategories.value = [];
+        return;
+    }
+
+    const response = await getReferences(
+        'category',
+        1,
+        100,
+        'id',
+        'asc',
+        ''
+    );
+
+    parentCategories.value = response.data.data.data;
+}
+
+watch(
+    () => dialogStore.visible,
+    async (visible) => {
+        if (!visible) {
+            return;
+        }
+
+        submitted.value = false;
+
+        if (dialogStore.reference) {
+            reference.value = {
+                ...dialogStore.reference
+            };
+        } else {
+            reference.value = emptyReference();
+        }
+
+        await loadParentCategories();
+    }
+);
+
+async function saveReference() {
+    if (saving.value) {
+        return;
+    }
+
+    submitted.value = true;
+
+    if (!reference.value.name?.trim()) {
+        return;
+    }
+
+    saving.value = true;
+
+    try {
+        let response;
+
+        if (reference.value.id) {
+            response = await updateReference(
+                reference.value.id,
+                reference.value
+            );
+        } else {
+            response = await createReference(
+                reference.value
+            );
+        }
+
+        toast.add({
+            severity: 'success',
+            summary: 'Успешно',
+            detail: response.data.message,
+            life: 3000
+        });
+
+        dialogStore.saved();
+
+    } catch (error) {
+        toast.add({
+            severity: 'error',
+            summary: 'Ошибка',
+            detail:
+                error.response?.data?.message ||
+                'Не удалось сохранить запись',
+            life: 3000
+        });
+    } finally {
+        saving.value = false;
+    }
+}
+</script>

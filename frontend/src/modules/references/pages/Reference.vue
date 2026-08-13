@@ -93,56 +93,8 @@
             </Paginator>
         </div>
 
-        <Dialog v-model:visible="referenceDialog" maximizable :style="{ width: '450px' }" :header="dialogTitle" modal
-            class="p-fluid">
+        <ReferenceDialog />
 
-            <div>
-                <FloatLabel variant="on" class="mt-2">
-                    <InputText id="name" v-model.trim="reference.name" autofocus :invalid="submitted && !reference.name"
-                        fluid />
-                    <label for="name">Наименование</label>
-                </FloatLabel>
-                <small v-if="submitted && !reference.name" class="p-error"> Наименование обязательно</small>
-            </div>
-
-            <div v-if="type === 'category'" class="field">
-                <FloatLabel variant="on" class="mt-4">
-                    <Select id="parent_id" v-model="reference.parent_id" :options="parentCategories" option-label="name"
-                        option-value="id" show-clear fluid />
-                    <label for="parent_id">Родительская категория</label>
-                </FloatLabel>
-            </div>
-
-            <div v-if="type === 'unit'" class="field">
-                <FloatLabel variant="on" class="mt-4">
-                    <InputText id="short_name" v-model.trim="reference.short_name" fluid />
-                    <label for="short_name">Краткое название</label>
-                </FloatLabel>
-            </div>
-
-            <div class="field">
-                <FloatLabel variant="on" class="mt-4">
-                    <Textarea id="description" v-model="reference.description" rows="3" fluid />
-                    <label for="description">Описание</label>
-                </FloatLabel>
-            </div>
-
-            <div class="field">
-                <FloatLabel variant="on" class="mt-4">
-                    <Select id="status" v-model="reference.status" :options="statuses" option-label="label"
-                        option-value="value" fluid />
-                    <label for="status">Статус</label>
-                </FloatLabel>
-            </div>
-
-            <!-- <template #footer> -->
-            <div class="reference-dialog-actions">
-                <Button label="Отмена" icon="pi pi-times" text :disabled="saving" @click="hideDialog" />
-                <Button label="Сохранить" icon="pi pi-check" text :loading="saving" :disabled="saving"
-                    @click="saveReference" />
-            </div>
-            <!-- </template> -->
-        </Dialog>
 
         <Dialog v-model:visible="deleteReferenceDialog" :style="{ width: '450px' }" header="Подтверждение" modal>
             <div class="confirmation-content">
@@ -191,11 +143,13 @@ import ProductMenu from '@/modules/directories/components/ProductMenu.vue';
 import * as XLSX from 'xlsx';
 import {
     getReferences,
-    createReference,
-    updateReference,
     deleteReference,
     deleteReferences
 } from '@/modules/references/api/reference.api';
+import ReferenceDialog from '@/modules/references/components/ReferenceDialog.vue';
+import { useReferenceDialogStore } from '@/modules/references/stores/referenceDialog.store';
+
+const dialogStore = useReferenceDialogStore();
 
 const route = useRoute();
 const toast = useToast();
@@ -230,10 +184,8 @@ const selectedReferences = ref([]);
 const parentCategories = ref([]);
 
 const loading = ref(false);
-const saving = ref(false);
 const deletingReference = ref(false);
 const deletingReferences = ref(false);
-const submitted = ref(false);
 
 const rows = ref(10);
 const first = ref(0);
@@ -276,7 +228,6 @@ function exportExcel() {
     );
 }
 
-const referenceDialog = ref(false);
 const deleteReferenceDialog = ref(false);
 const deleteReferencesDialog = ref(false);
 
@@ -284,26 +235,6 @@ const reference = ref({});
 
 const type = computed(() => route.query.type || 'category');
 
-const pageTitle = computed(() => {
-    const titles = {
-        category: 'Категории',
-        unit: 'Единицы измерения',
-        brand: 'Бренды'
-    };
-
-    return titles[type.value] || 'Справочники';
-});
-
-const dialogTitle = computed(() => {
-    return reference.value.id
-        ? `Редактировать: ${pageTitle.value}`
-        : `Добавить: ${pageTitle.value}`;
-});
-
-const statuses = [
-    { label: 'Активен', value: true },
-    { label: 'Неактивен', value: false }
-];
 
 async function onSort(event) {
     sortField.value = event.sortField;
@@ -389,55 +320,11 @@ function getParentCategoryName(parentId) {
 }
 
 function addReference() {
-    reference.value = emptyReference();
-    submitted.value = false;
-    referenceDialog.value = true;
-}
-function hideDialog() {
-    referenceDialog.value = false;
-    submitted.value = false;
-    reference.value = emptyReference();
+    dialogStore.openNew(type.value);
 }
 
 function editReference(item) {
-    reference.value = { ...item };
-    submitted.value = false;
-    referenceDialog.value = true;
-}
-
-async function saveReference() {
-    if (saving.value) {
-        return;
-    }
-
-    submitted.value = true;
-
-    if (!reference.value.name?.trim()) {
-        return;
-    }
-
-    saving.value = true;
-
-    try {
-        let response;
-        if (reference.value.id) {
-            response = await updateReference(reference.value.id, reference.value);
-        }
-        else {
-            response = await createReference(reference.value);
-        }
-        toast.add({ severity: 'success', summary: 'Успешно', detail: response.data.message, life: 3000 });
-
-        referenceDialog.value = false;
-        reference.value = emptyReference();
-        submitted.value = false;
-        await loadReferences();
-    }
-    catch (error) {
-        toast.add({ severity: 'error', summary: 'Ошибка', detail: error.response?.data?.message || 'Не удалось добавить запись', life: 3000 });
-    } finally {
-        saving.value = false;
-    }
+    dialogStore.openEdit(item, type.value);
 }
 
 function confirmDeleteReference(item) {
@@ -547,6 +434,19 @@ watch(
         await loadParentCategories();
     },
     { immediate: true }
+);
+
+watch(
+    () => dialogStore.changed,
+    async (changed) => {
+        if (!changed) {
+            return;
+        }
+
+        await loadReferences();
+
+        dialogStore.resetChanged();
+    }
 );
 
 </script>
