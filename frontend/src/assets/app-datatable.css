@@ -38,11 +38,8 @@
     padding: 0 10px;
     font-size: 13px;
     color: var(--text-color);
-    border: none;
     border: 1px solid var(--surface-border);
 
-    white-space: nowrap;
-    overflow: hidden;
     text-overflow: ellipsis;
     vertical-align: middle;
 }
@@ -57,8 +54,8 @@
     flex: 1;
     min-width: 0;
     overflow: hidden;
-    /* text-overflow: ellipsis; */
-    /* white-space: nowrap; */
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .p-datatable .p-selection-column {
@@ -307,7 +304,6 @@
 }
 
 
-/* Keep columns readable on narrow screens and scroll the table horizontally. */
 .base-table .p-datatable-table {
     min-width: 700px;
 }

@@ -66,7 +66,7 @@
                     </template>
                 </Column>
 
-                <Column header="Действия" :exportable="false">
+                <Column style="width: 4.1rem " :exportable="false">
                     <template #body="{ data }">
                         <Button icon="pi pi-ellipsis-h" rounded text severity="secondary" aria-label="Действия"
                             @click="openActionsMenu($event, data)" />
@@ -137,8 +137,9 @@
 
             <!-- <template #footer> -->
             <div class="reference-dialog-actions">
-                <Button label="Отмена" icon="pi pi-times" text @click="hideDialog" />
-                <Button label="Сохранить" icon="pi pi-check" text @click="saveReference" />
+                <Button label="Отмена" icon="pi pi-times" text :disabled="saving" @click="hideDialog" />
+                <Button label="Сохранить" icon="pi pi-check" text :loading="saving" :disabled="saving"
+                    @click="saveReference" />
             </div>
             <!-- </template> -->
         </Dialog>
@@ -154,9 +155,11 @@
             </div>
 
             <template #footer>
-                <Button label="Нет" icon="pi pi-times" text @click="deleteReferenceDialog = false" />
+                <Button label="Нет" icon="pi pi-times" text :disabled="deletingReference"
+                    @click="deleteReferenceDialog = false" />
 
-                <Button label="Да" icon="pi pi-check" text @click="destroyReference" />
+                <Button label="Да" icon="pi pi-check" text :loading="deletingReference"
+                    :disabled="deletingReference" @click="destroyReference" />
             </template>
         </Dialog>
 
@@ -169,8 +172,10 @@
             </div>
 
             <template #footer>
-                <Button label="Нет" icon="pi pi-times" text @click="deleteReferencesDialog = false" />
-                <Button label="Да" icon="pi pi-check" text @click="destroyReferences" />
+                <Button label="Нет" icon="pi pi-times" text :disabled="deletingReferences"
+                    @click="deleteReferencesDialog = false" />
+                <Button label="Да" icon="pi pi-check" text :loading="deletingReferences"
+                    :disabled="deletingReferences" @click="destroyReferences" />
             </template>
         </Dialog>
     </div>
@@ -225,12 +230,15 @@ const selectedReferences = ref([]);
 const parentCategories = ref([]);
 
 const loading = ref(false);
+const saving = ref(false);
+const deletingReference = ref(false);
+const deletingReferences = ref(false);
 const submitted = ref(false);
 
 const rows = ref(10);
 const first = ref(0);
 const total = ref(0);
-const sortField = ref('name');
+const sortField = ref('id');
 const sortOrder = ref('asc');
 const search = ref('');
 let searchTimer = null;
@@ -361,7 +369,7 @@ async function loadParentCategories() {
         'category',
         1,
         100,
-        'name',
+        'id',
         'asc',
         ''
     );
@@ -398,11 +406,18 @@ function editReference(item) {
 }
 
 async function saveReference() {
+    if (saving.value) {
+        return;
+    }
+
     submitted.value = true;
 
     if (!reference.value.name?.trim()) {
         return;
     }
+
+    saving.value = true;
+
     try {
         let response;
         if (reference.value.id) {
@@ -420,9 +435,9 @@ async function saveReference() {
     }
     catch (error) {
         toast.add({ severity: 'error', summary: 'Ошибка', detail: error.response?.data?.message || 'Не удалось добавить запись', life: 3000 });
+    } finally {
+        saving.value = false;
     }
-
-
 }
 
 function confirmDeleteReference(item) {
@@ -431,9 +446,11 @@ function confirmDeleteReference(item) {
 }
 
 async function destroyReference() {
-    if (!reference.value.id) {
+    if (deletingReference.value || !reference.value.id) {
         return;
     }
+
+    deletingReference.value = true;
 
     try {
         const response = await deleteReference(reference.value.id);
@@ -461,6 +478,8 @@ async function destroyReference() {
                 'Не удалось удалить запись',
             life: 3000
         });
+    } finally {
+        deletingReference.value = false;
     }
 }
 
@@ -469,11 +488,17 @@ function confirmDeleteReferences() {
 }
 
 async function destroyReferences() {
+    if (deletingReferences.value) {
+        return;
+    }
+
     const ids = selectedReferences.value.map(item => item.id);
 
     if (!ids.length) {
         return;
     }
+
+    deletingReferences.value = true;
 
     try {
         const response = await deleteReferences(ids);
@@ -504,6 +529,8 @@ async function destroyReferences() {
                 'Не удалось удалить выбранные записи',
             life: 3000
         });
+    } finally {
+        deletingReferences.value = false;
     }
 }
 

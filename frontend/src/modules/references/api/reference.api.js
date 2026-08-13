@@ -1,6 +1,6 @@
 import http from '@/core/api/http';
 
-export function getReferences(type, page = 1, perPage = 10, sortField = 'name', sortOrder = 'asc', search = '') {
+export function getReferences(type, page = 1, perPage = 10, sortField = 'id', sortOrder = 'asc', search = '') {
     return http.get('/references', {
         params: {
             type,
