@@ -1,8 +1,10 @@
 <template>
-    <Dialog v-model:visible="dialogStore.visible" maximizable :style="{ width: '450px' }" :header="dialogTitle" modal class="p-fluid">
+    <Dialog v-model:visible="dialogStore.visible" maximizable :style="{ width: '450px' }" :header="dialogTitle" modal
+        class="p-fluid">
         <div>
             <FloatLabel variant="on" class="mt-2">
-                <InputText id="name" v-model.trim="reference.name" autofocus :invalid="submitted && !reference.name" fluid />
+                <InputText id="name" v-model.trim="reference.name" autofocus :invalid="submitted && !reference.name"
+                    fluid />
                 <label for="name">Наименование</label>
             </FloatLabel>
             <small v-if="submitted && !reference.name" class="p-error"> Наименование обязательно</small>
@@ -10,8 +12,11 @@
 
         <div v-if="dialogStore.type === 'category'" class="field">
             <FloatLabel variant="on" class="mt-4">
-                <Select id="parent_id" v-model="reference.parent_id" :options="parentCategories" option-label="name" option-value="id" show-clear fluid />
-                <label for="parent_id"> Родительская категория</label>
+
+                <AppTreeSelect v-model="reference.parent_id" :loader="loadCategories"/>
+                <label for="parent_id">
+                    Родительская категория
+                </label>
             </FloatLabel>
         </div>
 
@@ -31,14 +36,16 @@
 
         <div class="field">
             <FloatLabel variant="on" class="mt-4">
-                <Select id="status" v-model="reference.status" :options="statuses" option-label="label" option-value="value" fluid />
+                <Select id="status" v-model="reference.status" :options="statuses" option-label="label"
+                    option-value="value" fluid />
                 <label for="status"> Статус</label>
             </FloatLabel>
         </div>
 
         <div class="reference-dialog-actions">
             <Button label="Отмена" icon="pi pi-times" text :disabled="saving" @click="dialogStore.close" />
-            <Button label="Сохранить" icon="pi pi-check" text :loading="saving" :disabled="saving" @click="saveReference" />
+            <Button label="Сохранить" icon="pi pi-check" text :loading="saving" :disabled="saving"
+                @click="saveReference" />
         </div>
     </Dialog>
 </template>
@@ -46,14 +53,14 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
+import AppTreeSelect from '@/components/AppTreeSelect.vue';
 
-import {getReferences, createReference, updateReference} from '@/modules/references/api/reference.api';
+import { getReferences, createReference, updateReference } from '@/modules/references/api/reference.api';
 import { useReferenceDialogStore } from '@/modules/references/stores/referenceDialog.store';
 
 const dialogStore = useReferenceDialogStore();
 const toast = useToast();
 const reference = ref({});
-const parentCategories = ref([]);
 const submitted = ref(false);
 const saving = ref(false);
 
@@ -79,22 +86,17 @@ function emptyReference() {
     };
 }
 
-async function loadParentCategories() {
-    if (dialogStore.type !== 'category') {
-        parentCategories.value = [];
-        return;
-    }
-
+async function loadCategories(search = '') {
     const response = await getReferences(
         'category',
         1,
         100,
-        'id',
+        'name',
         'asc',
-        ''
+        search
     );
 
-    parentCategories.value = response.data.data.data;
+    return response.data.data.data;
 }
 
 watch(
@@ -114,7 +116,6 @@ watch(
             reference.value = emptyReference();
         }
 
-        await loadParentCategories();
     }
 );
 
@@ -128,6 +129,7 @@ async function saveReference() {
     if (!reference.value.name?.trim()) {
         return;
     }
+    console.log('REFERENCE:', reference.value);
 
     saving.value = true;
 

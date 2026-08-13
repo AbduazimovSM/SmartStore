@@ -358,6 +358,7 @@ watch(
         }
 
         await loadReferences();
+        await loadParentCategories();
 
         dialogStore.resetChanged();
     }
