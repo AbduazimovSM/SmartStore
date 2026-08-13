@@ -26,7 +26,7 @@
             </template>
         </Toolbar>
         <div class="table-wrapper">
-            <DataTable ref="dt" class="base-table text-center" v-model:selection="selectedReferences"
+            <DataTable class="base-table text-center" v-model:selection="selectedReferences"
                 :value="references" :loading="loading" showGridlines data-key="id" columnResizeMode="fit" scrollable scrollHeight="flex"
                 :tableStyle="{ minWidth: '760px' }"
                  resizableColumns lazy :sortField="sortField"
@@ -68,8 +68,7 @@
 
                 <Column style="width: 4.1rem " :exportable="false">
                     <template #body="{ data }">
-                        <Button icon="pi pi-ellipsis-h" rounded text severity="secondary" aria-label="Действия"
-                            @click="openActionsMenu($event, data)" />
+                        <Button icon="pi pi-ellipsis-h" rounded text severity="secondary" aria-label="Действия" @click="openActionsMenu($event, data)" />
                     </template>
                 </Column>
 
@@ -88,14 +87,14 @@
 
                 <template #end>
                     <Button type="button" icon="pi pi-refresh" @click="loadReferences" text />
-                    <Button type="button" icon="pi pi-download" text @click="exportExcel" />
+                    <Button type="button" icon="pi pi-download" text />
                 </template>
             </Paginator>
         </div>
 
         <ReferenceDialog />
-        <DeleteReferenceDialog  v-model="deleteReferenceDialog" :item-name="reference?.name" :loading="deletingReference" @confirm="destroyReference"/>
-        <DeleteReferencesDialog v-model="deleteReferencesDialog" :count="selectedReferences.length" :loading="deletingReferences" @confirm="destroyReferences"/>
+        <DeleteReferenceDialog  v-model="deleteReferenceDialog" :item-name="reference?.name" :loading="loadingDeleteReference" @confirm="destroyReference"/>
+        <DeleteReferencesDialog v-model="deleteReferencesDialog" :count="selectedReferences.length" :loading="loadingDeleteReferences" @confirm="destroyReferences"/>
     </div>
 
 </template>
@@ -106,25 +105,34 @@ import { useRoute } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import '@/assets/app-datatable.css';
 import ProductMenu from '@/modules/directories/components/ProductMenu.vue';
-import * as XLSX from 'xlsx';
-import {
-    getReferences,
-    deleteReference,
-    deleteReferences
-} from '@/modules/references/api/reference.api';
+import {getReferences, deleteReference, deleteReferences} from '@/modules/references/api/reference.api';
 import ReferenceDialog from '@/modules/references/components/ReferenceDialog.vue';
-
-import DeleteReferencesDialog from '@/modules/references/components/DeleteReferencesDialog.vue';
 import DeleteReferenceDialog from '@/modules/references/components/DeleteReferenceDialog.vue';
+import DeleteReferencesDialog from '@/modules/references/components/DeleteReferencesDialog.vue';
 import { useReferenceDialogStore } from '@/modules/references/stores/referenceDialog.store';
-const dialogStore = useReferenceDialogStore();
 
+const dialogStore = useReferenceDialogStore();
 const route = useRoute();
 const toast = useToast();
-
-const actionsMenu = ref(null);
+const reference = ref(null);
+const references = ref([]);
 const selectedReference = ref(null);
-
+const selectedReferences = ref([]);
+const deleteReferenceDialog = ref(false);
+const deleteReferencesDialog = ref(false);
+const rows = ref(10);
+const first = ref(0);
+const total = ref(0);
+const sortField = ref('id');
+const sortOrder = ref('asc');
+const search = ref('');
+let searchTimer = null;
+const parentCategories = ref([]);
+const loading = ref(false);
+const loadingDeleteReference = ref(false);
+const loadingDeleteReferences = ref(false);
+const actionsMenu = ref(null);
+const type = computed(() => route.query.type || 'category');
 const actionItems = [
     {
         label: 'Изменить',
@@ -141,27 +149,10 @@ const actionItems = [
         }
     }
 ];
-
 function openActionsMenu(event, reference) {
     selectedReference.value = reference;
     actionsMenu.value.toggle(event);
 }
-const dt = ref();
-const references = ref([]);
-const selectedReferences = ref([]);
-const parentCategories = ref([]);
-
-const loading = ref(false);
-const deletingReference = ref(false);
-const deletingReferences = ref(false);
-
-const rows = ref(10);
-const first = ref(0);
-const total = ref(0);
-const sortField = ref('id');
-const sortOrder = ref('asc');
-const search = ref('');
-let searchTimer = null;
 
 function onSearch() {
     clearTimeout(searchTimer);
@@ -171,64 +162,18 @@ function onSearch() {
         await loadReferences();
     }, 400);
 }
-function exportExcel() {
-    const data = references.value.map(item => ({
-        ID: item.id,
-        'Наименование': item.name,
-        'Краткое название': item.short_name || '',
-        'Примечание': item.description || '',
-        'Статус': item.status ? 'Активен' : 'Неактивен'
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(data);
-
-    const workbook = XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(
-        workbook,
-        worksheet,
-        'Справочник'
-    );
-
-    XLSX.writeFile(
-        workbook,
-        `${type.value}.xlsx`
-    );
-}
-
-const deleteReferenceDialog = ref(false);
-const deleteReferencesDialog = ref(false);
-
-const reference = ref({});
-
-const type = computed(() => route.query.type || 'category');
-
-
-async function onSort(event) {
-    sortField.value = event.sortField;
-    sortOrder.value = event.sortOrder === 1 ? 'asc' : 'desc';
-
-    first.value = 0;
-
-    await loadReferences();
-}
 
 async function onPage(event) {
     first.value = event.first;
     rows.value = event.rows;
-
     await loadReferences();
 }
 
-function emptyReference() {
-    return {
-        type: type.value,
-        name: '',
-        short_name: null,
-        parent_id: null,
-        description: '',
-        status: true
-    };
+async function onSort(event) {
+    sortField.value = event.sortField;
+    sortOrder.value = event.sortOrder === 1 ? 'asc' : 'desc';
+    first.value = 0;
+    await loadReferences();
 }
 
 async function loadReferences() {
@@ -301,11 +246,11 @@ function confirmDeleteReference(item) {
 }
 
 async function destroyReference() {
-    if (deletingReference.value || !reference.value.id) {
+    if (loadingDeleteReference.value || !reference.value.id) {
         return;
     }
 
-    deletingReference.value = true;
+    loadingDeleteReference.value = true;
 
     try {
         const response = await deleteReference(reference.value.id);
@@ -318,7 +263,7 @@ async function destroyReference() {
         });
 
         deleteReferenceDialog.value = false;
-        reference.value = emptyReference();
+        reference.value = null;
         await loadReferences();
     } catch (error) {
         console.error('Ошибка удаления:', error);
@@ -334,7 +279,7 @@ async function destroyReference() {
             life: 3000
         });
     } finally {
-        deletingReference.value = false;
+        loadingDeleteReference.value = false;
     }
 }
 
@@ -343,7 +288,7 @@ function confirmDeleteReferences() {
 }
 
 async function destroyReferences() {
-    if (deletingReferences.value) {
+    if (loadingDeleteReferences.value) {
         return;
     }
 
@@ -353,7 +298,7 @@ async function destroyReferences() {
         return;
     }
 
-    deletingReferences.value = true;
+    loadingDeleteReferences.value = true;
 
     try {
         const response = await deleteReferences(ids);
@@ -385,7 +330,7 @@ async function destroyReferences() {
             life: 3000
         });
     } finally {
-        deletingReferences.value = false;
+        loadingDeleteReferences.value = false;
     }
 }
 
@@ -393,7 +338,7 @@ watch(
     () => route.query.type,
     async () => {
         selectedReferences.value = [];
-        reference.value = emptyReference();
+        reference.value = null;
 
         first.value = 0;
         search.value = '';
