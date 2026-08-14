@@ -1,5 +1,5 @@
 <template>
-    <div class="card reference-page-card">
+    <div class="card universal-page-card">
         <ProductMenu class="mb-8" />
         <Toolbar style="border-radius: 0">
             <template #start>
@@ -26,11 +26,23 @@
             </template>
         </Toolbar>
         <div class="table-wrapper">
-            <DataTable class="base-table text-center" v-model:selection="selectedReferences"
-                :value="references" :loading="loading" showGridlines data-key="id" columnResizeMode="fit" scrollable scrollHeight="flex"
+            <DataTable 
+                class="base-table" 
+                v-model:selection="selectedReferences"
+                :value="references" 
+                :loading="loading" 
+                showGridlines 
+                data-key="id" 
+                resizableColumns 
+                columnResizeMode="fit" 
+                scrollable 
+                scrollHeight="flex"
                 :tableStyle="{ minWidth: '760px' }"
-                 resizableColumns lazy :sortField="sortField"
-                :sortOrder="sortOrder === 'asc' ? 1 : -1" @sort="onSort">
+                lazy 
+                :sortField="sortField"
+                :sortOrder="sortOrder === 'asc' ? 1 : -1" 
+                @sort="onSort"
+            >
                 <template #empty>
                     <p class="text-center">Данные не найдены</p>
                 </template>
@@ -74,8 +86,13 @@
 
                 <Menu ref="actionsMenu" :model="actionItems" :popup="true" />
             </DataTable>
-            <Paginator class="isp-paginator" style="border: 1px solid var(--surface-border)" :rows="rows" :first="first"
-                :totalRecords="total" :rowsPerPageOptions="[5, 10, 25, 50, 100]"
+            <Paginator 
+                class="isp-paginator" 
+                style="border: 1px solid var(--surface-border)" 
+                :rows="rows" 
+                :first="first"
+                :totalRecords="total" 
+                :rowsPerPageOptions="[5, 10, 25, 50, 100]"
                 template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown JumpToPageInput"
                 @page="onPage">
 
