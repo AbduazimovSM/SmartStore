@@ -6,7 +6,7 @@
             <template #start>
                 <Button label="Добавить" icon="pi pi-plus" class="mr-2" @click="addProduct" />
 
-                <Button icon="pi pi-trash" :disabled="!selectedProducts.length" @click="confirmDeleteProducts">
+                <Button icon="pi pi-trash" :disabled="!selectedProducts.length" severity="danger" @click="confirmDeleteProducts">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                         class="bi bi-trash" viewBox="0 0 16 16">
                         <path

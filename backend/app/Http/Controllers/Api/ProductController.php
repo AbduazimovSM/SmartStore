@@ -87,11 +87,20 @@ class ProductController extends Controller
             'category_id'  => ['required', 'integer', Rule::exists('references', 'id')->where('type', 'category')],
             'unit_id'      => ['required', 'integer', Rule::exists('references', 'id')->where('type', 'unit')],
             'brand_id'     => ['nullable', 'integer', Rule::exists('references', 'id')->where('type', 'brand')],
-            'image'        => 'nullable|string|max:255',
+            'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'min_quantity' => 'nullable|numeric|min:0',
             'description'  => 'nullable|string',
             'status'       => 'required|boolean',
         ]);
+
+
+        if ($request->hasFile('image')) {
+            $filename = time().'_'.uniqid().'.'.$request->file('image')->extension();
+            $request->file('image')->move(public_path('/images/products/'), $filename);
+            $validated['image'] = $filename;
+        } else {
+            $validated['image'] = 'default.png';
+        }
 
         $product = Product::create($validated);
 
@@ -110,19 +119,30 @@ class ProductController extends Controller
     public function update(Request $request, string $id)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'barcode' => 'nullable|string|max:255',
-            'sku' => 'nullable|string|max:255',
-            'category_id' => ['required', 'integer', Rule::exists('references', 'id')->where('type', 'category')],
-            'unit_id' => ['required', 'integer', Rule::exists('references', 'id')->where('type', 'unit')],
-            'brand_id' => ['nullable','integer', Rule::exists('references', 'id')->where('type', 'brand')],
-            'image' => 'nullable|string|max:255',
+            'name'         => 'required|string|max:255',
+            'barcode'      => 'nullable|string|max:255',
+            'sku'          => 'nullable|string|max:255',
+            'category_id'  => ['required', 'integer', Rule::exists('references', 'id')->where('type', 'category')],
+            'unit_id'      => ['required', 'integer', Rule::exists('references', 'id')->where('type', 'unit')],
+            'brand_id'     => ['nullable','integer', Rule::exists('references', 'id')->where('type', 'brand')],
+            'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'min_quantity' => 'nullable|numeric|min:0',
-            'description' => 'nullable|string',
-            'status' => 'required|boolean',
+            'description'  => 'nullable|string',
+            'status'       => 'required|boolean',
         ]);
 
         $product = Product::findOrFail($id);
+
+        if ($request->hasFile('image')) {
+            if ($product->image && $product->image !== 'default.png' && file_exists(public_path('/images/products/'.$product->image))) {
+                unlink(public_path('/images/products/'.$product->image));
+            }
+
+            $filename = time().'_'.uniqid().'.'.$request->file('image')->extension();
+            $request->file('image')->move(public_path('/images/products/'), $filename);
+
+            $validated['image'] = $filename;
+        }
 
         $product->update($validated);
 
@@ -142,6 +162,9 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
 
+        if ($product->image && $product->image !== 'default.png' && file_exists(public_path('/images/products/'.$product->image))){
+            unlink(public_path('/images/products/'.$product->image));
+        }
         $product->delete();
 
         return response()->json([
@@ -155,6 +178,19 @@ class ProductController extends Controller
             'ids' => ['required', 'array', 'min:1'],
             'ids.*' => ['required', 'integer', 'exists:products,id'],
         ]);
+
+        $products = Product::whereIn('id', $validated['ids'])->get();
+        foreach ($products as $product) {
+            if (
+                $product->image &&
+                $product->image !== 'default.png' &&
+                file_exists(public_path('/images/products/'.$product->image))
+            ) {
+                unlink(
+                    public_path('/images/products/'.$product->image)
+                );
+            }
+        }
 
         $deletedCount = Product::whereIn(
             'id',

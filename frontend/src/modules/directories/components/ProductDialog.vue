@@ -1,157 +1,89 @@
 <template>
-    <Dialog
-        v-model:visible="dialogStore.visible"
-        maximizable
-        :style="{ width: '520px' }"
-        :header="dialogTitle"
-        modal
-        class="p-fluid"
-    >
-        <div>
-            <FloatLabel variant="on" class="mt-2">
-                <InputText
-                    id="name"
-                    v-model.trim="product.name"
-                    autofocus
-                    :invalid="submitted && !product.name"
-                    fluid
-                />
-                <label for="name">Наименование</label>
-            </FloatLabel>
+    <Dialog v-model:visible="dialogStore.visible" maximizable :style="{ width: '800px' }" :header="dialogTitle" modal
+        class="p-fluid">
 
-            <small
-                v-if="submitted && !product.name"
-                class="p-error"
-            >
-                Наименование обязательно
-            </small>
+        <div class="grid grid-cols-2 gap-2 mt-4">
+            <div class="field">
+                <FloatLabel variant="on">
+                    <InputText id="name" v-model.trim="product.name" autofocus :invalid="submitted && !product.name"
+                        fluid />
+                    <label for="name">Наименование</label>
+                </FloatLabel>
+                <small v-if="submitted && !product.name" class="p-error"> Наименование обязательно</small>
+            </div>
+            <div class="field">
+                <FloatLabel variant="on">
+                    <InputText id="barcode" v-model.trim="product.barcode" fluid />
+                    <label for="barcode">Штрихкод</label>
+                </FloatLabel>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 mt-8">
+            <div class="field">
+                <FloatLabel variant="on">
+                    <InputText id="sku" v-model.trim="product.sku" fluid />
+                    <label for="sku">Артикул</label>
+                </FloatLabel>
+            </div>
+            <div class="field">
+                <FloatLabel variant="on">
+                    <AppTreeSelect v-model="product.category_id" :loader="loadCategories" />
+                    <label>Категория</label>
+                </FloatLabel>
+                <small v-if="submitted && !product.category_id" class="p-error"> Категория обязательна</small>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 mt-8">
+            <div class="field">
+                <FloatLabel variant="on">
+                    <AppSelect v-model="product.unit_id" :loader="loadUnits" :show-add="false" />
+                    <label>Единица измерения</label>
+                </FloatLabel>
+                <small v-if="submitted && !product.unit_id" class="p-error"> Единица измерения обязательна</small>
+            </div>
+            <div class="field">
+                <FloatLabel variant="on">
+                    <AppSelect v-model="product.brand_id" :loader="loadBrands" :show-add="false" />
+                    <label>Бренд</label>
+                </FloatLabel>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 mt-8">
+            <div class="field">
+                <FloatLabel variant="on">
+                    <InputNumber id="min_quantity" v-model="product.min_quantity" :min="0" :minFractionDigits="0"
+                        :maxFractionDigits="3" fluid />
+                    <label for="min_quantity">Минимальный остаток</label>
+                </FloatLabel>
+            </div>
+            <div class="font-medium">
+                <FileUpload mode="basic" name="image" accept="image/*" :maxFileSize="2000000" :auto="false" customUpload @select="onSelect" chooseLabel="Выбрать" />
+            </div>
         </div>
 
         <div class="field">
-            <FloatLabel variant="on" class="mt-4">
-                <InputText
-                    id="barcode"
-                    v-model.trim="product.barcode"
-                    fluid
-                />
-                <label for="barcode">Штрихкод</label>
-            </FloatLabel>
-        </div>
-
-        <div class="field">
-            <FloatLabel variant="on" class="mt-4">
-                <InputText
-                    id="sku"
-                    v-model.trim="product.sku"
-                    fluid
-                />
-                <label for="sku">Артикул</label>
-            </FloatLabel>
-        </div>
-
-        <div class="field">
-            <FloatLabel variant="on" class="mt-4">
-                <AppTreeSelect
-                    v-model="product.category_id"
-                    :loader="loadCategories"
-                />
-                <label>Категория</label>
-            </FloatLabel>
-
-            <small
-                v-if="submitted && !product.category_id"
-                class="p-error"
-            >
-                Категория обязательна
-            </small>
-        </div>
-
-        <div class="field">
-            <FloatLabel variant="on" class="mt-4">
-                <AppSelect
-                    v-model="product.unit_id"
-                    :loader="loadUnits"
-                    :show-add="false"
-                />
-                <label>Единица измерения</label>
-            </FloatLabel>
-
-            <small
-                v-if="submitted && !product.unit_id"
-                class="p-error"
-            >
-                Единица измерения обязательна
-            </small>
-        </div>
-
-        <div class="field">
-            <FloatLabel variant="on" class="mt-4">
-                <AppSelect
-                    v-model="product.brand_id"
-                    :loader="loadBrands"
-                    :show-add="false"
-                />
-                <label>Бренд</label>
-            </FloatLabel>
-        </div>
-
-        <div class="field">
-            <FloatLabel variant="on" class="mt-4">
-                <InputNumber
-                    id="min_quantity"
-                    v-model="product.min_quantity"
-                    :min="0"
-                    :minFractionDigits="0"
-                    :maxFractionDigits="3"
-                    fluid
-                />
-                <label for="min_quantity">Минимальный остаток</label>
-            </FloatLabel>
-        </div>
-
-        <div class="field">
-            <FloatLabel variant="on" class="mt-4">
-                <Textarea
-                    id="description"
-                    v-model="product.description"
-                    rows="3"
-                    fluid
-                />
+            <FloatLabel variant="on" class="mt-8">
+                <Textarea id="description" v-model="product.description" rows="3" fluid />
                 <label for="description">Описание</label>
             </FloatLabel>
         </div>
 
         <div class="field">
-            <FloatLabel variant="on" class="mt-4">
-                <Select
-                    id="status"
-                    v-model="product.status"
-                    :options="statuses"
-                    option-label="label"
-                    option-value="value"
-                    fluid
-                />
+            <FloatLabel variant="on" class="mt-8">
+                <Select id="status" v-model="product.status" :options="statuses" option-label="label"
+                    option-value="value" fluid />
                 <label for="status">Статус</label>
             </FloatLabel>
         </div>
 
         <div class="reference-dialog-actions">
-            <Button
-                label="Отмена"
-                icon="pi pi-times"
-                text
-                :disabled="saving"
-                @click="dialogStore.close"
-            />
+            <Button label="Отмена" icon="pi pi-times" text :disabled="saving" @click="dialogStore.close" />
 
-            <Button
-                label="Сохранить"
-                icon="pi pi-check"
-                text
-                :loading="saving"
-                :disabled="saving"
-                @click="saveProduct"
-            />
+            <Button label="Сохранить" icon="pi pi-check" text :loading="saving" :disabled="saving"
+                @click="saveProduct" />
         </div>
     </Dialog>
 </template>
