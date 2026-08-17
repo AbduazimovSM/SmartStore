@@ -9,20 +9,23 @@
 <script setup>
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
 
-const items = [
+const items = computed(() => [
     {
-        label: 'Номенклатура',
+        label: t('menu.product_tabs.products'),
         icon: 'pi pi-box',
         route: {
             path: '/directories/products'
         }
     },
     {
-        label: 'Категория',
+        label: t('menu.product_tabs.category'),
         icon: 'pi pi-tags',
         route: {
             path: '/references',
@@ -30,7 +33,7 @@ const items = [
         }
     },
     {
-        label: 'Единица измерения',
+        label: t('menu.product_tabs.unit'),
         icon: 'pi pi-list',
         route: {
             path: '/references',
@@ -38,14 +41,14 @@ const items = [
         }
     },
     {
-        label: 'Бренды',
+        label: t('menu.product_tabs.brand'),
         icon: 'pi pi-building',
         route: {
             path: '/references',
             query: { type: 'brand' }
         }
     }
-];
+]);
 
 const activeIndex = computed({
     get() {
@@ -62,12 +65,10 @@ const activeIndex = computed({
         return indexes[route.query.type] ?? 0;
     },
 
-    set() {
-        // Значение меняется через changeTab()
-    }
+    set() {}
 });
 
 function changeTab(event) {
-    router.push(items[event.index].route);
+    router.push(items.value[event.index].route);
 }
-</script> 
+</script>

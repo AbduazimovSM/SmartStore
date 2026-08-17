@@ -74,10 +74,12 @@
 
     "errors": {
         "loadFailed": "Failed to load data",
-        "saveFailed": "Failed to save data"
+        "saveFailed": "Failed to save data",
+        "deleteFailed": "Failed to delete product",
+        "deleteSelectedFailed": "Failed to delete selected products"
     },
-
     "success": {
-        "save": "Data saved successfully"
+        "save": "Data saved successfully",
+        "deleteSelected": "Selected products deleted"
     }
 }

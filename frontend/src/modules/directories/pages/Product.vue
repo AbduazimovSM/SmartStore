@@ -36,7 +36,7 @@
                 :sortOrder="sortOrder === 'asc' ? 1 : -1" @sort="onSort">
                 <template #empty>
                     <p class="text-center">
-                        Данные не найдены
+                        {{ t('global.messages.no_data') }}
                     </p>
                 </template>
 
@@ -68,7 +68,7 @@
                     </template>
                 </Column>
 
-                <Column field="image" :header="t('directories.products.table.brand')">
+                <Column field="image" :header="t('directories.products.table.image')">
                     <template #body="{ data }">
                         <div class="image-cell">
                             <img :src="`${imageUrl}/images/products/${data.image}`" />
@@ -82,7 +82,7 @@
 
                 <Column field="status" :header="t('directories.products.table.status')" sortable>
                     <template #body="{ data }">
-                        <Tag :value="data.status ? 'Активен' : 'Неактивен'" :severity="data.status ? 'success' : 'danger'" />
+                        <Tag   :value="data.status ? t('global.status.active') : t('global.status.inactive')" :severity="data.status ? 'success' : 'danger'" />
                     </template>
                 </Column>
 
@@ -99,9 +99,15 @@
                 template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown JumpToPageInput"
                 @page="onPage">
                 <template #start>
-                    Показаны с {{ total === 0 ? 0 : first + 1 }}
-                    по {{ Math.min(first + rows, total) }}
-                    из {{ total }} записей
+                    {{
+                        total === 0
+                            ? t('global.pagination.empty')
+                            : t('global.pagination.report', {
+                                first: first + 1,
+                                last: Math.min(first + rows, total),
+                                totalRecords: total
+                            })
+                    }}
                 </template>
 
                 <template #end>
@@ -119,7 +125,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import '@/assets/app-datatable.css';
 import ProductMenu from '@/modules/directories/components/ProductMenu.vue';
@@ -154,22 +160,22 @@ const sortField = ref('id');
 const sortOrder = ref('asc');
 const actionsMenu = ref(null);
 
-const actionItems = [
+const actionItems = computed(() => [
     {
-        label: 'Изменить',
+        label: t('global.buttons.edit'),
         icon: 'pi pi-pencil',
         command: () => {
             editProduct(selectedProduct.value);
         }
     },
     {
-        label: 'Удалить',
+        label: t('global.buttons.delete'),
         icon: 'pi pi-trash',
         command: () => {
             confirmDeleteProduct(selectedProduct.value);
         }
     }
-];
+]);
 
 function openActionsMenu(event, product) {
     selectedProduct.value = product;
@@ -219,7 +225,7 @@ async function loadProducts() {
         total.value = response.data.data.total;
 
     } catch (error) {
-        console.error('Ошибка загрузки товаров:', error);
+        console.error(error);
 
         products.value = [];
         total.value = 0;
@@ -263,10 +269,10 @@ async function destroyProduct() {
 
         toast.add({
             severity: 'success',
-            summary: 'Успешно',
+            summary: t('global.messages.saved'),
             detail:
                 response.data.message ||
-                'Товар успешно удален',
+                t('global.messages.deleted'),
             life: 3000
         });
 
@@ -278,10 +284,10 @@ async function destroyProduct() {
     } catch (error) {
         toast.add({
             severity: 'error',
-            summary: 'Ошибка',
+            summary: t('global.messages.error'),
             detail:
                 error.response?.data?.message ||
-                'Не удалось удалить товар',
+                t('directories.errors.deleteFailed'),
             life: 3000
         });
 
@@ -308,10 +314,10 @@ async function destroyProducts() {
 
         toast.add({
             severity: 'success',
-            summary: 'Успешно',
+            summary: t('global.messages.deleted'),
             detail:
                 response.data.message ||
-                'Выбранные товары удалены',
+                t('directories.success.deleteSelected'),
             life: 3000
         });
 
@@ -323,10 +329,10 @@ async function destroyProducts() {
     } catch (error) {
         toast.add({
             severity: 'error',
-            summary: 'Ошибка',
+            summary: t('global.messages.error'),
             detail:
                 error.response?.data?.message ||
-                'Не удалось удалить выбранные товары',
+               t('directories.errors.deleteSelectedFailed'),
             life: 3000
         });
 

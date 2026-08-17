@@ -92,5 +92,12 @@
     "soft": "Software",
     "faq": "FAQ",
     "video": "Video tutorials"
+  },
+
+  "product_tabs": {
+    "products": "Products",
+    "category": "Category",
+    "unit": "Unit",
+    "brand": "Brands"
   }
 }
