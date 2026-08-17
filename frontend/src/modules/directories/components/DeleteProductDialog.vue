@@ -1,7 +1,7 @@
 <template>
     <Dialog
         v-model:visible="visible"
-        header="Подтверждение"
+        :header="t('directories.products.dialog.title_confirm')"
         :style="{ width: '450px' }"
         modal
     >
@@ -12,7 +12,7 @@
             />
 
             <span>
-                Вы действительно хотите удалить
+                {{ t('global.messages.confirm_delete') }}
                 <b>{{ itemName }}</b>?
             </span>
         </div>
@@ -39,6 +39,9 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
+
 const visible = defineModel({
     type: Boolean,
     default: false

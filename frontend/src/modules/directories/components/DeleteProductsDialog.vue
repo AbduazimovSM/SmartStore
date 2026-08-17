@@ -2,20 +2,24 @@
     <Dialog
         v-model:visible="visible"
         :style="{ width: '450px' }"
-        header="Подтверждение"
+        :header="t('directories.products.dialog.title_confirm')"
         modal
     >
         <div class="flex items-center gap-4">
             <i class="pi pi-exclamation-triangle !text-3xl"></i>
 
             <span>
-                Удалить <b>{{ count }}</b> выбранных товаров?
+                {{
+                    t('directories.success.deleteSelected', {
+                        count: count
+                    })
+                }}
             </span>
         </div>
 
         <template #footer>
             <Button
-                label="Нет"
+                :label="t('global.buttons.no')"
                 icon="pi pi-times"
                 text
                 :disabled="loading"
@@ -23,7 +27,7 @@
             />
 
             <Button
-                label="Да"
+                :label="t('global.buttons.yes')"
                 icon="pi pi-check"
                 text
                 :loading="loading"
@@ -35,6 +39,9 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
+
 const visible = defineModel({
     type: Boolean,
     default: false
