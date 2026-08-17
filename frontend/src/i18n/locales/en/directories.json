@@ -47,7 +47,7 @@
             "type": "Type",
             "category": "Category",
             "brand": "Brand",
-            "unit": "Unit of measure",
+            "unit": "Unit",
             "min_quantity": "Minimum quantity",
             "package": "Package",
             "term": "Expiration date",

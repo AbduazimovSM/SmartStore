@@ -24,7 +24,7 @@
                         <i class="pi pi-search" />
                     </InputIcon>
 
-                    <InputText v-model="search" placeholder="Search..." @input="onSearch" />
+                    <InputText v-model="search" :placeholder="t('global.buttons.search')" @input="onSearch" />
                 </IconField>
             </template>
         </Toolbar>
@@ -42,33 +42,33 @@
 
                 <Column selection-mode="multiple" style="width: 3rem" :exportable="false" />
 
-                <Column field="id" header="ID" sortable />
+                <Column field="id" :header="t('directories.products.table.id')" sortable />
 
-                <Column field="name" header="Наименование" sortable />
+                <Column field="name" :header="t('directories.products.table.name')" sortable />
 
-                <Column field="barcode" header="Штрихкод" sortable />
+                <Column field="barcode" :header="t('directories.products.table.barcode')" sortable />
 
-                <Column field="sku" header="Артикул" sortable />
+                <Column field="sku" :header="t('directories.products.table.sku')" sortable />
 
-                <Column header="Категория">
+                <Column :header="t('directories.products.table.category')">
                     <template #body="{ data }">
                         {{ data.category?.name || '' }}
                     </template>
                 </Column>
 
-                <Column header="Ед. измерения">
+                <Column :header="t('directories.products.table.unit')">
                     <template #body="{ data }">
                         {{ data.unit?.name || '' }}
                     </template>
                 </Column>
 
-                <Column header="Бренд">
+                <Column :header="t('directories.products.table.brand')">
                     <template #body="{ data }">
                         {{ data.brand?.name || '' }}
                     </template>
                 </Column>
 
-                <Column field="image" header="Изображение">
+                <Column field="image" :header="t('directories.products.table.brand')">
                     <template #body="{ data }">
                         <div class="image-cell">
                             <img :src="`${imageUrl}/images/products/${data.image}`" />
@@ -76,14 +76,13 @@
                     </template>
                 </Column>
 
-                <Column field="min_quantity" header="Мин. остаток" sortable />
+                <Column field="min_quantity" :header="t('directories.products.table.min_quantity')" sortable />
 
-                <Column field="description" header="Описание" />
+                <Column field="description" :header="t('directories.products.table.description')" />
 
-                <Column field="status" header="Статус" sortable>
+                <Column field="status" :header="t('directories.products.table.status')" sortable>
                     <template #body="{ data }">
-                        <Tag :value="data.status ? 'Активен' : 'Неактивен'"
-                            :severity="data.status ? 'success' : 'danger'" />
+                        <Tag :value="data.status ? 'Активен' : 'Неактивен'" :severity="data.status ? 'success' : 'danger'" />
                     </template>
                 </Column>
 
@@ -132,10 +131,8 @@ import { useProductDialogStore } from '@/modules/directories/stores/productDialo
 
 import { getProducts, deleteProduct, deleteProducts } from '@/modules/directories/api/product.api';
 
-import { useI18nPage } from '@/i18n/useI18nPage';
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
-useI18nPage('directories');
 
 const imageUrl = import.meta.env.VITE_API_URL;
 const dialogStore = useProductDialogStore();

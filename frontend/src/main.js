@@ -22,31 +22,41 @@ async function bootstrap() {
 
     app.use(pinia);
 
-    const locale =
-        localStorage.getItem('lang') ||
-        i18n.global.locale.value ||
-        'ru';
+    const locale = localStorage.getItem('lang') || i18n.global.locale.value || 'ru';
 
     i18n.global.locale.value = locale;
 
     await Promise.all([
         loadLocale(i18n, locale, 'global'),
         loadLocale(i18n, locale, 'menu'),
-        loadLocale(i18n, locale, 'references')
     ]);
 
     watch(
-        () => i18n.global.locale.value,
-        async (newLocale) => {
-            localStorage.setItem('lang', newLocale);
+    () => i18n.global.locale.value,
+    async (newLocale) => {
+        localStorage.setItem('lang', newLocale);
 
-            await Promise.all([
-                loadLocale(i18n, newLocale, 'global'),
-                loadLocale(i18n, newLocale, 'menu'),
-                loadLocale(i18n, newLocale, 'references')
-            ]);
+        const currentModule =
+            router.currentRoute.value.meta.module;
+
+        const loaders = [
+            loadLocale(i18n, newLocale, 'global'),
+            loadLocale(i18n, newLocale, 'menu')
+        ];
+
+        if (currentModule) {
+            loaders.push(
+                loadLocale(
+                    i18n,
+                    newLocale,
+                    currentModule
+                )
+            );
         }
-    );
+
+        await Promise.all(loaders);
+    }
+);
 
     app.use(i18n);
     app.use(router);

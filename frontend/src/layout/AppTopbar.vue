@@ -1,7 +1,8 @@
 <script setup>
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-
+import { useRoute } from 'vue-router';
+import { changeLanguage as changeAppLanguage } from '@/i18n/useI18nPage';
 
 import { useLayout } from '@/layout/composables/layout';
 import AppConfigurator from './AppConfigurator.vue';
@@ -11,7 +12,7 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 
 
 const { locale } = useI18n();
-
+const route = useRoute();
 
 const languagePopover = ref(null);
 
@@ -27,10 +28,11 @@ function toggleLanguage(event) {
 }
 
 
-function changeLanguage(lang) {
-    locale.value = lang;
-    localStorage.setItem('lang', lang);
-
+async function selectLanguage(lang) {
+    await changeAppLanguage(
+        lang,
+        route.meta.module
+    );
 
     languagePopover.value.hide();
 }
@@ -84,7 +86,7 @@ function changeLanguage(lang) {
             :key="lang.code"
             type="button"
             class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800"
-            @click="changeLanguage(lang.code)"
+            @click="selectLanguage(lang.code)"
         >
             <i
                 v-if="locale === lang.code"
