@@ -1,8 +1,39 @@
 <script setup>
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+
 import { useLayout } from '@/layout/composables/layout';
 import AppConfigurator from './AppConfigurator.vue';
 
+
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
+
+
+const { locale } = useI18n();
+
+
+const languagePopover = ref(null);
+
+
+const languages = [
+    { label: 'English', code: 'en' },
+    { label: 'Русский', code: 'ru' }
+];
+
+
+function toggleLanguage(event) {
+    languagePopover.value.toggle(event);
+}
+
+
+function changeLanguage(lang) {
+    locale.value = lang;
+    localStorage.setItem('lang', lang);
+
+
+    languagePopover.value.hide();
+}
 </script>
 
 <template>
@@ -37,6 +68,37 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 
         <div class="layout-topbar-actions">
             <div class="layout-config-menu">
+<!--старт ЯЗЫК -->
+                <button
+    type="button"
+    class="layout-topbar-action"
+    @click="toggleLanguage"
+>
+    <i class="pi pi-globe"></i>
+</button>
+
+<Popover ref="languagePopover">
+    <div class="flex flex-col gap-1">
+        <button
+            v-for="lang in languages"
+            :key="lang.code"
+            type="button"
+            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800"
+            @click="changeLanguage(lang.code)"
+        >
+            <i
+                v-if="locale === lang.code"
+                class="pi pi-check"
+            ></i>
+
+            <span v-else class="w-4"></span>
+
+            <span>{{ lang.label }}</span>
+        </button>
+    </div>
+</Popover>
+<!--конец ЯЗЫК -->
+
                 <button type="button" class="layout-topbar-action" @click="toggleDarkMode">
                     <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
                 </button>

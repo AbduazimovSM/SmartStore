@@ -1,0 +1,30 @@
+{
+  "title": "Reference",
+  "model": {
+    "table": {
+      "company": "Company",
+      "filial": "Branch",
+
+      "category": "Category",
+      "brand": "Brand",
+      "unit": "Unit",
+      "group": "Group",
+      "region": "Region",
+
+      "specialty": "Specialty",
+      "institution": "Institution",
+      "role": "Role",
+
+      "id": "ID",
+      "name": "Name",
+      "code": "Code",
+      "address": "Address",
+      "description": "Description",
+      "status": "Status"
+    },
+    "dialog": {
+      "title_reference": "Add / Edit Reference",
+      "title_confirm": "Confirmation"
+    }
+  }
+}

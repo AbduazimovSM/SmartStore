@@ -4,9 +4,10 @@
 
         <Toolbar style="border-radius: 0">
             <template #start>
-                <Button label="Добавить" icon="pi pi-plus" class="mr-2" @click="addProduct" />
+                <Button :label="t('global.buttons.add')" icon="pi pi-plus" class="mr-2" @click="addProduct"/>
 
-                <Button icon="pi pi-trash" :disabled="!selectedProducts.length" severity="danger" @click="confirmDeleteProducts">
+                <Button icon="pi pi-trash" :disabled="!selectedProducts.length" severity="danger"
+                    @click="confirmDeleteProducts">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                         class="bi bi-trash" viewBox="0 0 16 16">
                         <path
@@ -69,24 +70,20 @@
 
                 <Column field="image" header="Изображение">
                     <template #body="{ data }">
-                        {{ data.image || '' }}
+                        <div class="image-cell">
+                            <img :src="`${imageUrl}/images/products/${data.image}`" />
+                        </div>
                     </template>
                 </Column>
 
-                <Column
-                    field="min_quantity"
-                    header="Мин. остаток"
-                    sortable
-                />
+                <Column field="min_quantity" header="Мин. остаток" sortable />
 
                 <Column field="description" header="Описание" />
 
                 <Column field="status" header="Статус" sortable>
                     <template #body="{ data }">
-                        <Tag
-                            :value="data.status ? 'Активен' : 'Неактивен'"
-                            :severity="data.status ? 'success' : 'danger'"
-                        />
+                        <Tag :value="data.status ? 'Активен' : 'Неактивен'"
+                            :severity="data.status ? 'success' : 'danger'" />
                     </template>
                 </Column>
 
@@ -114,8 +111,10 @@
                 </template>
             </Paginator>
             <ProductDialog />
-            <DeleteProductDialog v-model="deleteProductDialog" :item-name="selectedProduct?.name" :loading="loadingDeleteProduct" @confirm="destroyProduct"/>
-            <DeleteProductsDialog v-model="deleteProductsDialog" :count="selectedProducts.length" :loading="loadingDeleteProducts" @confirm="destroyProducts"/>
+            <DeleteProductDialog v-model="deleteProductDialog" :item-name="selectedProduct?.name"
+                :loading="loadingDeleteProduct" @confirm="destroyProduct" />
+            <DeleteProductsDialog v-model="deleteProductsDialog" :count="selectedProducts.length"
+                :loading="loadingDeleteProducts" @confirm="destroyProducts" />
         </div>
     </div>
 </template>
@@ -133,6 +132,12 @@ import { useProductDialogStore } from '@/modules/directories/stores/productDialo
 
 import { getProducts, deleteProduct, deleteProducts } from '@/modules/directories/api/product.api';
 
+import { useI18nPage } from '@/i18n/useI18nPage';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
+useI18nPage('directories');
+
+const imageUrl = import.meta.env.VITE_API_URL;
 const dialogStore = useProductDialogStore();
 const toast = useToast();
 const products = ref([]);

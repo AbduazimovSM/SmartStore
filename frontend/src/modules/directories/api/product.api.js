@@ -23,7 +23,9 @@ export function createProduct(data) {
 }
 
 export function updateProduct(id, data) {
-    return http.put(`/products/${id}`, data);
+    data.append('_method', 'PUT');
+
+    return http.post(`/products/${id}`, data);
 }
 
 export function deleteProduct(id) {

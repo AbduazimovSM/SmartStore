@@ -1,0 +1,178 @@
+{
+  "currencies": {
+    "title": "Currencies",
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "code": "Alphabetic code",
+      "symbol": "Symbol",
+      "status": "Status"
+    },
+    "dialog": {
+      "title_currency": "Add / edit currency",
+      "title_confirm": "Confirmation"
+    }
+  },
+
+  "filials": {
+    "title": "Branches",
+    "table": {
+      "id": "ID",
+      "name": "Branch name",
+      "address": "Address",
+      "status": "Status"
+    },
+    "dialog": {
+      "title_filial": "Add / edit branch",
+      "title_confirm": "Confirmation"
+    }
+  },
+
+  "warehouses": {
+    "title": "Warehouses",
+    "table": {
+      "id": "ID",
+      "company": "Company",
+      "filial": "Branch",
+      "name": "Warehouse name",
+      "address": "Address",
+      "status": "Status"
+    },
+    "dialog": {
+      "title_warehouse": "Add / edit warehouse",
+      "title_confirm": "Confirmation"
+    }
+  },
+
+  "accounts": {
+    "title": "Accounts",
+    "table": {
+      "id": "ID",
+      "company": "Company",
+      "filial": "Branch",
+      "currency": "Currency",
+      "name": "Name",
+      "type": "Account type",
+      "counterparty": "Counterparty",
+      "employee": "Employee",
+      "owner": "Owner",
+      "is_default": "Default",
+      "balance": "Balance",
+      "status": "Status"
+    },
+    "type": {
+      "account_organization": "Organization account",
+      "account_counterparty": "Counterparty account",
+      "account_employee": "Employee account"
+    },
+    "dialog": {
+      "title_account": "Add / edit account",
+      "title_confirm": "Confirmation"
+    }
+  },
+
+  "profile": {
+    "title": "Personal account",
+    "save": "Save profile",
+    "personalTitle": "User details",
+    "company": {
+      "title": "Company details",
+      "name": "Company name",
+      "phone": "Company phone",
+      "email": "Company email",
+      "filial": "Main branch",
+      "businessType": "Business type",
+      "costMethod": "Costing method",
+      "baseCurrency": "Base currency",
+      "multiCurrency": "Multi-currency"
+    },
+    "fields": {
+      "name": "User name",
+      "username": "Login",
+      "phone": "Phone",
+      "email": "Email",
+      "birthDate": "Date of birth",
+      "gender": "Gender",
+      "address": "Address"
+    },
+    "genders": {
+      "male": "Male",
+      "female": "Female",
+      "unknown": "Not specified"
+    },
+    "messages": {
+      "saved": "Profile saved",
+      "loadError": "Could not load profile",
+      "saveError": "Could not save profile"
+    }
+  },
+  "general": {
+    "title": "General settings",
+    "description": "Company, accounting and currency preferences",
+    "save": "Save changes",
+    "fields": {
+      "name": "Company name",
+      "phone": "Phone",
+      "email": "Email",
+      "businessType": "Business type",
+      "costMethod": "Inventory costing method",
+      "baseCurrency": "Base currency",
+      "multiCurrency": "Use multiple currencies"
+    },
+    "businessTypes": {
+      "trade": "Trade",
+      "service": "Services",
+      "production": "Production",
+      "mixed": "Mixed business"
+    },
+    "costMethods": {
+      "fifo": "FIFO — oldest inventory is used first",
+      "average": "Weighted average cost"
+    },
+    "validation": {
+      "name": "Enter the company name"
+    },
+    "messages": {
+      "saved": "Settings saved",
+      "loadError": "Could not load settings",
+      "saveError": "Could not save settings"
+    }
+  },
+  "stores": "Offices and branches",
+  "users": "Users",
+  "salesPlan": "Sales plan",
+  "currency": "Currencies",
+  "openingBalances": {
+    "title": "Opening balances",
+    "from": "Date from",
+    "to": "Date to",
+    "number": "Number",
+    "date": "Date",
+    "type": "Type",
+    "amount": "Amount",
+    "author": "Created by",
+    "note": "Note",
+    "goods": "Goods balances",
+    "accounts": "Account balances",
+    "createGoods": "New goods balances",
+    "createAccounts": "New account balances",
+    "product": "Product",
+    "warehouse": "Warehouse",
+    "quantity": "Quantity",
+    "cost": "Cost",
+    "account": "Account",
+    "addLine": "Add line",
+    "selectProduct": "Select a product",
+    "addSelected": "Add selected",
+    "addAll": "Add all",
+    "salePrice": "Sale price",
+    "currency": "Currency",
+    "barcode": "Barcode",
+    "markup": "Markup",
+    "saveClose": "Save and close",
+    "autoNumber": "Automatic",
+    "operation": "Operation type",
+    "total": "Total"
+  },
+  "documents": "Documents"
+}

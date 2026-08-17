@@ -95,7 +95,7 @@ class ProductController extends Controller
 
 
         if ($request->hasFile('image')) {
-            $filename = time().'_'.uniqid().'.'.$request->file('image')->extension();
+            $filename = now()->format('Y-m-d-H-i').'_'.uniqid().'.'.$request->file('image')->extension();
             $request->file('image')->move(public_path('/images/products/'), $filename);
             $validated['image'] = $filename;
         } else {
@@ -138,7 +138,7 @@ class ProductController extends Controller
                 unlink(public_path('/images/products/'.$product->image));
             }
 
-            $filename = time().'_'.uniqid().'.'.$request->file('image')->extension();
+            $filename = now()->format('Y-m-d-H-i').'_'.uniqid().'.'.$request->file('image')->extension();
             $request->file('image')->move(public_path('/images/products/'), $filename);
 
             $validated['image'] = $filename;

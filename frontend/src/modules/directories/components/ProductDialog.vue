@@ -114,6 +114,11 @@ const toast = useToast();
 const product = ref({});
 const submitted = ref(false);
 const saving = ref(false);
+const imageFile = ref(null);
+
+function onSelect(event) {
+    imageFile.value = event.files[0];
+}
 
 const statuses = [
     { label: 'Активен', value: true },
@@ -188,6 +193,7 @@ watch(
         }
 
         submitted.value = false;
+        imageFile.value = null;
 
         if (dialogStore.product) {
             product.value = {
@@ -217,16 +223,47 @@ async function saveProduct() {
     saving.value = true;
 
     try {
+        const formData = new FormData();
+
+        formData.append('name', product.value.name);
+        formData.append('barcode', product.value.barcode || '');
+        formData.append('sku', product.value.sku || '');
+        formData.append('category_id', product.value.category_id);
+        formData.append('unit_id', product.value.unit_id);
+
+        if (product.value.brand_id) {
+            formData.append('brand_id', product.value.brand_id);
+        }
+
+        formData.append(
+            'min_quantity',
+            product.value.min_quantity ?? 0
+        );
+
+        formData.append(
+            'description',
+            product.value.description || ''
+        );
+
+        formData.append(
+            'status',
+            product.value.status ? 1 : 0
+        );
+
+        if (imageFile.value) {
+            formData.append('image', imageFile.value);
+        }
+
         let response;
 
         if (product.value.id) {
             response = await updateProduct(
                 product.value.id,
-                product.value
+                formData
             );
         } else {
             response = await createProduct(
-                product.value
+                formData
             );
         }
 
