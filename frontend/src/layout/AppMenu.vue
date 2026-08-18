@@ -1,26 +1,27 @@
 <script setup>
-import { ref } from 'vue';
-
+import { ref, computed } from 'vue';
 import AppMenuItem from './AppMenuItem.vue';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
-const model = ref([
+const model = computed(() =>[
     {
-        items: [{ label: 'Главная', icon: 'pi pi-fw pi-home', to: '/' }]
+        items: [{ label: t('menu.home'), icon: 'pi pi-fw pi-home', to: '/' }]
     },
     {
         items: [
             {
-                label: 'Бухгалтерия',
+                label: t('menu.accounting.title'),
                 icon: 'pi pi-fw pi-wallet',
                 items: [
                     {
-                        label: 'Login',
+                        label: t('menu.accounting.kassa'),
                         icon: 'pi pi-fw pi-sign-in',
                         to: '/'
                     },
 
                     {
-                        label: 'Access Denied',
+                        label: t('menu.accounting.cash'),
                         icon: 'pi pi-fw pi-lock',
                         to: '/'
                     }
@@ -31,17 +32,17 @@ const model = ref([
     {
         items: [
             {
-                label: 'Продажи товаров',
+                label:  t('menu.sales.title'),
                 icon: 'pi pi-fw pi-shopping-cart',
                 items: [
                     {
-                        label: 'Login',
+                        label: t('menu.sales.add'),
                         icon: 'pi pi-fw pi-sign-in',
                         to: '/'
                     },
 
                     {
-                        label: 'Access Denied',
+                        label: t('menu.sales.list'),
                         icon: 'pi pi-fw pi-lock',
                         to: '/'
                     }
@@ -52,17 +53,17 @@ const model = ref([
     {
         items: [
             {
-                label: 'Закуп товаров',
+                label: t('menu.purchase.title'),
                 icon: 'pi pi-fw pi-truck',
                 items: [
                     {
-                        label: 'Login',
+                        label: t('menu.purchase.add'),
                         icon: 'pi pi-fw pi-sign-in',
                         to: '/'
                     },
 
                     {
-                        label: 'Access Denied',
+                        label: t('menu.purchase.list'),
                         icon: 'pi pi-fw pi-lock',
                         to: '/'
                     }
@@ -73,17 +74,17 @@ const model = ref([
     {
         items: [
             {
-                label: 'Склады',
+                label:  t('menu.warehouse.title'),
                 icon: 'pi pi-fw pi-warehouse',
                 items: [
                     {
-                        label: 'Login',
+                        label: t('menu.warehouse.stock_balance'),
                         icon: 'pi pi-fw pi-sign-in',
                         to: '/'
                     },
 
                     {
-                        label: 'Access Denied',
+                        label: t('menu.warehouse.inventory'),
                         icon: 'pi pi-fw pi-lock',
                         to: '/'
                     }
@@ -94,17 +95,17 @@ const model = ref([
     {
         items: [
             {
-                label: 'Отчёты',
+                label: t('menu.report.title'),
                 icon: 'pi pi-fw pi-chart-bar',
                 items: [
                     {
-                        label: 'Login',
+                        label:  t('menu.report.sales'),
                         icon: 'pi pi-fw pi-sign-in',
                         to: '/'
                     },
 
                     {
-                        label: 'Access Denied',
+                        label:  t('menu.report.purchase'),
                         icon: 'pi pi-fw pi-lock',
                         to: '/'
                     }
@@ -115,17 +116,17 @@ const model = ref([
     {
         items: [
             {
-                label: 'Справочники',
+                label: t('menu.catalog.title'),
                 icon: 'pi pi-fw pi-book',
                 items: [
                     {
-                        label: 'Номенклатура',
+                        label: t('menu.catalog.products'),
                         icon: 'pi pi-fw pi-box',
                         to: '/directories/products'
                     },
 
                     {
-                        label: 'Контрагенты',
+                        label: t('menu.catalog.counterparties'),
                         icon: 'pi pi-fw pi-users',
                         to: '/directories/counterparties'
                     }
@@ -136,46 +137,46 @@ const model = ref([
     {
         items: [
             {
-                label: 'Настройки',
+                label:  t('menu.settings.title'),
                 icon: 'pi pi-fw pi-cog',
                 items: [
                     {
-                        label: 'Личный кабинет',
+                        label: t('menu.settings.account'),
                         icon: 'pi pi-fw pi-user',
                         to: '/settings/profile'
                     },
                     {
-                        label: 'Общие настройки',
+                        label: t('menu.settings.general'),
                         icon: 'pi pi-fw pi-sliders-h',
                         to: '/settings/general'
                     },
                     {
-                        label: 'Филиалы',
+                        label:  t('menu.settings.filials'),
                         icon: 'pi pi-fw pi-building',
                         to: '/settings/branches'
                     },
                     {
-                        label: 'Пользователи',
+                        label: t('menu.settings.users'),
                         icon: 'pi pi-fw pi-users',
                         to: '/settings/users'
                     },
                     {
-                        label: 'Валюты',
+                        label: t('menu.settings.currency'),
                         icon: 'pi pi-fw pi-dollar',
                         to: '/settings/currencies'
                     },
                     {
-                        label: 'Счета',
+                        label: t('menu.settings.accounts'),
                         icon: 'pi pi-fw pi-wallet',
                         to: '/settings/accounts'
                     },
                     {
-                        label: 'Склады',
+                        label: t('menu.settings.warehouses'),
                         icon: 'pi pi-fw pi-warehouse',
                         to: '/settings/warehouses'
                     },
                     {
-                        label: 'Начальные остатки',
+                        label: t('menu.settings.begin_balance'),
                         icon: 'pi pi-fw pi-database',
                         to: '/settings/begin_balances'
                     }
@@ -186,17 +187,17 @@ const model = ref([
     {
         items: [
             {
-                label: 'Поддержка',
+                label: t('menu.support.title'),
                 icon: 'pi pi-fw pi-question-circle',
                 items: [
                     {
-                        label: 'Login',
+                        label: t('menu.support.guide'),
                         icon: 'pi pi-fw pi-sign-in',
                         to: '/'
                     },
 
                     {
-                        label: 'Access Denied',
+                        label: t('menu.support.faq'),
                         icon: 'pi pi-fw pi-lock',
                         to: '/'
                     }

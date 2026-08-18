@@ -118,6 +118,8 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 import { useRoute } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import '@/assets/app-datatable.css';

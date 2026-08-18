@@ -62,9 +62,7 @@
     },
     "status": {
         "active": "Активный",
-        "inactive": "Неактивный",
-        "enabled": "Включено",
-        "disabled": "Выключено"
+        "inactive": "Неактивный"
     },
     "labels": {
         "actions": "Действия",

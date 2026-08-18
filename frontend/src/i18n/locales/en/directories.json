@@ -59,7 +59,7 @@
         },
 
         "dialog": {
-            "title_product": "Add / edit product or service",
+            "title_product": "Add and edit product",
             "title_confirm": "Confirmation"
         },
 
@@ -80,6 +80,6 @@
     },
     "success": {
         "save": "Data saved successfully",
-        "deleteSelected": "Selected products deleted"
+        "deleteSelected": "Delete {count} selected products?"
     }
 }

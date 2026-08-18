@@ -60,7 +60,7 @@ async function selectLanguage(lang) {
                     </g>
                 </svg>
 
-                <span class=""> SmartStore </span>
+                <span class=""> AutoCore </span>
             </router-link>
 
             <button class="layout-menu-button layout-topbar-action ms-8" @click="toggleMenu">

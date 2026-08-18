@@ -1,5 +1,5 @@
 <template>
-    <Dialog v-model:visible="dialogStore.visible" maximizable :style="{ width: '800px' }" :header="dialogTitle" modal
+    <Dialog v-model:visible="dialogStore.visible" maximizable :style="{ width: '800px' }" :header="t('directories.products.dialog.title_product')" modal
         class="p-fluid">
 
         <div class="grid grid-cols-2 gap-2 mt-4">
@@ -7,14 +7,14 @@
                 <FloatLabel variant="on">
                     <InputText id="name" v-model.trim="product.name" autofocus :invalid="submitted && !product.name"
                         fluid />
-                    <label for="name">Наименование</label>
+                    <label for="name">{{ t('directories.products.table.name') }}</label>
                 </FloatLabel>
-                <small v-if="submitted && !product.name" class="p-error"> Наименование обязательно</small>
+                <small v-if="submitted && !product.name" class="p-error"> {{ t('global.messages.required') }} </small>
             </div>
             <div class="field">
                 <FloatLabel variant="on">
                     <InputText id="barcode" v-model.trim="product.barcode" fluid />
-                    <label for="barcode">Штрихкод</label>
+                    <label for="barcode">{{ t('directories.products.table.barcode') }}</label>
                 </FloatLabel>
             </div>
         </div>
@@ -23,15 +23,15 @@
             <div class="field">
                 <FloatLabel variant="on">
                     <InputText id="sku" v-model.trim="product.sku" fluid />
-                    <label for="sku">Артикул</label>
+                    <label for="sku">{{ t('directories.products.table.sku') }}</label>
                 </FloatLabel>
             </div>
             <div class="field">
                 <FloatLabel variant="on">
                     <AppTreeSelect v-model="product.category_id" :loader="loadCategories" />
-                    <label>Категория</label>
+                    <label>{{ t('directories.products.table.category') }}</label>
                 </FloatLabel>
-                <small v-if="submitted && !product.category_id" class="p-error"> Категория обязательна</small>
+                <small v-if="submitted && !product.category_id" class="p-error">{{ t('global.messages.required') }}</small>
             </div>
         </div>
 
@@ -39,14 +39,14 @@
             <div class="field">
                 <FloatLabel variant="on">
                     <AppSelect v-model="product.unit_id" :loader="loadUnits" :show-add="false" />
-                    <label>Единица измерения</label>
+                    <label>{{ t('directories.products.table.unit') }}</label>
                 </FloatLabel>
-                <small v-if="submitted && !product.unit_id" class="p-error"> Единица измерения обязательна</small>
+                <small v-if="submitted && !product.unit_id" class="p-error"> {{ t('global.messages.required') }} </small>
             </div>
             <div class="field">
                 <FloatLabel variant="on">
                     <AppSelect v-model="product.brand_id" :loader="loadBrands" :show-add="false" />
-                    <label>Бренд</label>
+                    <label>{{ t('directories.products.table.brand') }}</label>
                 </FloatLabel>
             </div>
         </div>
@@ -56,18 +56,18 @@
                 <FloatLabel variant="on">
                     <InputNumber id="min_quantity" v-model="product.min_quantity" :min="0" :minFractionDigits="0"
                         :maxFractionDigits="3" fluid />
-                    <label for="min_quantity">Минимальный остаток</label>
+                    <label for="min_quantity">{{ t('directories.products.table.min_quantity') }}</label>
                 </FloatLabel>
             </div>
             <div class="font-medium">
-                <FileUpload mode="basic" name="image" accept="image/*" :maxFileSize="2000000" :auto="false" customUpload @select="onSelect" chooseLabel="Выбрать" />
+                <FileUpload mode="basic" name="image" accept="image/*" :maxFileSize="2000000" :auto="false" customUpload @select="onSelect" :chooseLabel="t('global.buttons.select')" />
             </div>
         </div>
 
         <div class="field">
             <FloatLabel variant="on" class="mt-8">
                 <Textarea id="description" v-model="product.description" rows="3" fluid />
-                <label for="description">Описание</label>
+                <label for="description">{{ t('directories.products.table.description') }}</label>
             </FloatLabel>
         </div>
 
@@ -75,14 +75,14 @@
             <FloatLabel variant="on" class="mt-8">
                 <Select id="status" v-model="product.status" :options="statuses" option-label="label"
                     option-value="value" fluid />
-                <label for="status">Статус</label>
+                <label for="status">{{ t('directories.products.table.status') }}</label>
             </FloatLabel>
         </div>
 
         <div class="reference-dialog-actions">
-            <Button label="Отмена" icon="pi pi-times" text :disabled="saving" @click="dialogStore.close" />
+            <Button :label="t('global.buttons.cancel')" icon="pi pi-times" text :disabled="saving" @click="dialogStore.close" />
 
-            <Button label="Сохранить" icon="pi pi-check" text :loading="saving" :disabled="saving"
+            <Button :label="t('global.buttons.save')" icon="pi pi-check" text :loading="saving" :disabled="saving"
                 @click="saveProduct" />
         </div>
     </Dialog>
@@ -91,6 +91,8 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 import AppSelect from '@/components/AppSelect.vue';
 import AppTreeSelect from '@/components/AppTreeSelect.vue';
@@ -120,16 +122,18 @@ function onSelect(event) {
     imageFile.value = event.files[0];
 }
 
-const statuses = [
-    { label: 'Активен', value: true },
-    { label: 'Неактивен', value: false }
-];
+const statuses = computed(() => [
+    {
+        label: t('global.status.active'),
+        value: true
+    },
+    {
+        label: t('global.status.inactive'),
+        value: false
+    }
+]);
 
-const dialogTitle = computed(() => {
-    return product.value.id
-        ? 'Редактировать товар'
-        : 'Добавить товар';
-});
+
 
 function emptyProduct() {
     return {
@@ -269,8 +273,8 @@ async function saveProduct() {
 
         toast.add({
             severity: 'success',
-            summary: 'Успешно',
-            detail: response.data.message,
+            summary: t('global.messages.saved'),
+            detail: response.data.message || t('directories.success.save'),
             life: 3000
         });
 
@@ -278,10 +282,9 @@ async function saveProduct() {
     } catch (error) {
         toast.add({
             severity: 'error',
-            summary: 'Ошибка',
+            summary: t('global.messages.error'),
             detail:
-                error.response?.data?.message ||
-                'Не удалось сохранить товар',
+                error.response?.data?.message || t('directories.errors.saveFailed'),
             life: 3000
         });
     } finally {

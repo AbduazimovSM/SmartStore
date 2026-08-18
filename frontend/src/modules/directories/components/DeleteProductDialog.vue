@@ -19,7 +19,7 @@
 
         <template #footer>
             <Button
-                label="Нет"
+                :label="t('global.buttons.no')"
                 icon="pi pi-times"
                 text
                 :disabled="loading"
@@ -27,7 +27,7 @@
             />
 
             <Button
-                label="Да"
+                :label="t('global.buttons.yes')"
                 icon="pi pi-check"
                 severity="danger"
                 :loading="loading"
