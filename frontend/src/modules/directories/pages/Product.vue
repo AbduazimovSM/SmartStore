@@ -165,7 +165,7 @@ const actionsMenu = ref(null);
 
 const actionItems = computed(() => [
     {
-        label: t('global.buttons.edit'),
+        label: t('global.buttons.update'),
         icon: 'pi pi-pencil',
         command: () => {
             editProduct(selectedProduct.value);

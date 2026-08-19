@@ -1,6 +1,6 @@
 {
     "app": {
-        "title": "AutoCore | Ядро автоматизации"
+        "title": "AutoCore | Automation Core"
     },
 
     "buttons": {
@@ -22,20 +22,32 @@
     },
 
     "pagination": {
-        "report": "Showing {first} to {last} of {totalRecords} entries",
+        "report": "Showing {first} to {last} of {totalRecords} records",
         "empty": "No records"
     },
 
     "messages": {
+        "confirm_delete": "Are you sure you want to delete the record “{name}”?",
+        "confirm_delete_selected": "Are you sure you want to delete the selected records ({count})?",
+        "no_data": "No data",
+        "loading": "Loading…",
+        "required": "Required field"
+    },
+
+    "success": {
         "created": "Record created successfully",
         "updated": "Record updated successfully",
         "deleted": "Record deleted successfully",
-        "no_data": "No data",
+        "saved": "Data saved successfully",
+        "delete_selected": "Selected records deleted successfully"
+    },
 
-        "saved": "Saved",
-        "error": "An error occurred",
-        "loading": "Loading…",
-        "required": "Required field"
+    "errors": {
+        "load_failed": "Failed to load data",
+        "save_failed": "Failed to save data",
+        "delete_failed": "Failed to delete the record",
+        "delete_selected_failed": "Failed to delete the selected records",
+        "error": "An error occurred"
     },
 
     "status": {

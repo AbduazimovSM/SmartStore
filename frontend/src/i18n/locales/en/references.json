@@ -1,32 +1,32 @@
 {
-  "title": "Reference",
-  "model": {
-    "table": {
-      "company": "Company",
-      "filial": "Branch",
+    "title": "Reference",
 
-      "category": "Category",
-      "parent_category": "Parent category",
-      "unit": "Unit",
-      "short_name": "Short name",
-      "brand": "Brand",
-      "group": "Group",
-      "region": "Region",
+    "model": {
+        "table": {
+            "company": "Company",
+            "filial": "Branch",
+            "category": "Category",
+            "parent_category": "Parent Category",
+            "unit": "Unit of Measurement",
+            "short_name": "Short Name",
+            "brand": "Brand",
+            "group": "Group",
+            "region": "Region",
+            "specialty": "Specialty",
+            "institution": "Educational Institution",
+            "role": "Role",
 
-      "specialty": "Specialty",
-      "institution": "Institution",
-      "role": "Role",
+            "id": "ID",
+            "name": "Name",
+            "code": "Code",
+            "address": "Address",
+            "description": "Description",
+            "status": "Status"
+        },
 
-      "id": "ID",
-      "name": "Name",
-      "code": "Code",
-      "address": "Address",
-      "description": "Description",
-      "status": "Status"
-    },
-    "dialog": {
-      "title_reference": "Add / Edit Reference",
-      "title_confirm": "Confirmation"
+        "dialog": {
+            "title_reference": "Add and Edit",
+            "title_confirm": "Confirmation"
+        }
     }
-  }
 }

@@ -165,7 +165,7 @@ const actionsMenu = ref(null);
 const type = computed(() => route.query.type || 'category');
 const actionItems = computed(() => [
     {
-        label: t('global.buttons.edit'),
+        label: t('global.buttons.update'),
         icon: 'pi pi-pencil',
         command: () => {
             editReference(selectedReference.value);

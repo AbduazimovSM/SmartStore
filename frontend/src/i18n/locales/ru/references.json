@@ -1,6 +1,6 @@
 
 {
-  "title": "Справочник",
+
   "model": {
     "table": {
       "company": "Компания",
@@ -23,19 +23,11 @@
       "description": "Описание",
       "status": "Статус"
     },
+
     "dialog": {
       "title_reference": "Добавление и редактирование",
       "title_confirm": "Подтверждение"
-    },
-    "errors": {
-        "loadFailed": "Ошибка загрузки данных",
-        "saveFailed": "Ошибка сохранения данных",
-        "deleteFailed": "Не удалось удалить товар",
-        "deleteSelectedFailed": "Не удалось удалить выбранные товары"
-    },
-    "success": {
-        "save": "Данные успешно сохранены",
-        "deleteSelected": "Удалить {count} выбранных товаров?"
     }
+
   }
 }
