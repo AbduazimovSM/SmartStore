@@ -6,8 +6,10 @@
       "filial": "Branch",
 
       "category": "Category",
-      "brand": "Brand",
+      "parent_category": "Parent category",
       "unit": "Unit",
+      "short_name": "Short name",
+      "brand": "Brand",
       "group": "Group",
       "region": "Region",
 

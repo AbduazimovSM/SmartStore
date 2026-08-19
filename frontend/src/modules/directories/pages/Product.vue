@@ -99,15 +99,18 @@
                 template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown JumpToPageInput"
                 @page="onPage">
                 <template #start>
-                    {{
-                        total === 0
-                            ? t('global.pagination.empty')
-                            : t('global.pagination.report', {
+                    <span v-if="total === 0">
+                        {{ t('global.pagination.empty') }}
+                    </span>
+                    <span v-else>
+                        {{
+                            t('global.pagination.report', {
                                 first: first + 1,
                                 last: Math.min(first + rows, total),
                                 totalRecords: total
                             })
-                    }}
+                        }}
+                    </span>
                 </template>
 
                 <template #end>

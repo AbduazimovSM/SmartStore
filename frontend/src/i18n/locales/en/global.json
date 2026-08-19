@@ -1,80 +1,45 @@
 {
     "app": {
-        "title": "TIJORAT PRO"
+        "title": "AutoCore | Ядро автоматизации"
     },
-    "topbar": {
-        "calendar": "Calendar",
-        "three_months": "Previous, current and next month",
-        "messages": "Messages",
-        "profile": "Profile",
-        "account": "Account",
-        "my_profile": "My profile",
-        "settings": "Settings",
-        "logout": "Log out"
-    },
+
     "buttons": {
-        "save": "Save",
         "cancel": "Cancel",
+        "save": "Save",
+        "no": "No",
+        "yes": "Yes",
         "create": "Create",
         "update": "Update",
-        "edit": "Edit",
         "delete": "Delete",
+        "confirm": "Confirm",
+        "refresh": "Refresh",
+        "clear": "Clear",
+        "select": "Select",
         "close": "Close",
-        "yes": "Yes",
-        "no": "No",
-        "new": "New",
         "add": "Add",
         "search": "Search…",
-        "clear": "Clear",
-        "refresh": "Refresh",
-        "select": "Select",
-        "back": "Back",
-        "confirm": "Confirm",
-        "export": "Export to Excel"
+        "back": "Back"
     },
+
     "pagination": {
         "report": "Showing {first} to {last} of {totalRecords} entries",
         "empty": "No records"
     },
+
     "messages": {
-        "created": "Successfully created",
-        "updated": "Successfully updated",
-        "deleted": "Successfully deleted",
+        "created": "Record created successfully",
+        "updated": "Record updated successfully",
+        "deleted": "Record deleted successfully",
+        "no_data": "No data",
+
         "saved": "Saved",
         "error": "An error occurred",
         "loading": "Loading…",
-        "no_data": "No data",
-        "section_ready": "The section is connected. Data and operations will be available after the server side is implemented.",
-        "confirm_delete": "Are you sure you want to delete",
-        "required": "Required field",
-        "validation_error": "Please check the correctness of the input",
-        "not_found": "Nothing found",
-        "access_denied": "Access denied",
-        "session_expired": "Session expired, please log in again",
-        "warning": "Warning",
-        "currency_exists": "This currency already exists in the list",
-        "currency_not_exists": "This currency does not exist in the international ISO list",
-        "filial_name_exists": "A branch with this name already exists",
-        "warehouse_name_exists": "A warehouse with this name already exists",
-        "account_name_exists": "An account with this name already exists in the company."
+        "required": "Required field"
     },
+
     "status": {
         "active": "Active",
-        "inactive": "Inactive",
-        "enabled": "Enabled",
-        "disabled": "Disabled"
-    },
-    "labels": {
-        "actions": "Actions",
-        "date": "Date",
-        "from": "From",
-        "to": "To",
-        "total": "Total",
-        "count": "Count"
-    },
-    "common": {
-        "columns": "Columns",
-        "columns_visibility": "Column visibility",
-        "reset": "Reset table"
+        "inactive": "Inactive"
     }
 }

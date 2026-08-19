@@ -3,7 +3,7 @@
         <ProductMenu class="mb-8" />
         <Toolbar style="border-radius: 0">
             <template #start>
-                <Button label="Добавить" icon="pi pi-plus" class="mr-2" @click="addReference" />
+                <Button :label="t('global.buttons.add')" icon="pi pi-plus" class="mr-2" @click="addReference" />
                 <Button icon="pi pi-trash" severity="danger" :disabled="!selectedReferences.length"
                     @click="confirmDeleteReferences">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
@@ -21,7 +21,7 @@
                     <InputIcon>
                         <i class="pi pi-search" />
                     </InputIcon>
-                    <InputText v-model="search" placeholder="Search..." @input="onSearch" />
+                    <InputText v-model="search" :placeholder="t('global.buttons.search')" @input="onSearch" />
                 </IconField>
             </template>
         </Toolbar>
@@ -44,36 +44,36 @@
                 @sort="onSort"
             >
                 <template #empty>
-                    <p class="text-center">Данные не найдены</p>
+                    <p class="text-center">{{ t('global.messages.no_data') }}</p>
                 </template>
 
                 <Column selection-mode="multiple" style="width: 3rem" :exportable="false" />
 
-                <Column field="id" header="ID" sortable />
+                <Column field="id" :header="t('references.model.table.id')" sortable />
 
-                <Column field="name" header="Наименование" sortable />
+                <Column field="name" :header="t('references.model.table.name')" sortable />
 
-                <Column v-if="type === 'category'" field="parent_id" header="Род.категория" sortable>
+                <Column v-if="type === 'category'" field="parent_id" :header="t('references.model.table.parent_category')" sortable>
                     <template #body="{ data }">
                         {{ getParentCategoryName(data.parent_id) }}
                     </template>
                 </Column>
 
-                <Column v-if="type === 'unit'" field="short_name" header="Краткое название" sortable>
+                <Column v-if="type === 'unit'" field="short_name" :header="t('references.model.table.short_name')" sortable>
                     <template #body="{ data }">
                         {{ data.short_name || '' }}
                     </template>
                 </Column>
 
-                <Column field="description" header="Примичание" sortable>
+                <Column field="description" :header="t('references.model.table.description')" sortable>
                     <template #body="{ data }">
                         {{ data.description || '' }}
                     </template>
                 </Column>
 
-                <Column field="status" header="Статус" sortable>
+                <Column field="status" :header="t('references.model.table.status')" sortable>
                     <template #body="{ data }">
-                        <Tag :value="data.status ? 'Активен' : 'Неактивен'"
+                        <Tag :value="data.status ? t('global.status.active') : t('global.status.inactive')"
                             :severity="data.status ? 'success' : 'danger'" />
                     </template>
                 </Column>
@@ -97,9 +97,19 @@
                 @page="onPage">
 
                 <template #start>
-                    Показаны с {{ first + 1 }}
-                    по {{ Math.min(first + rows, total) }}
-                    из {{ total }} записей
+                    <span v-if="total === 0">
+                        {{ t('global.pagination.empty') }}
+                    </span>
+
+                    <span v-else>
+                        {{
+                            t('global.pagination.report', {
+                                first: first + 1,
+                                last: Math.min(first + rows, total),
+                                totalRecords: total
+                            })
+                        }}
+                    </span>
                 </template>
 
                 <template #end>
@@ -153,22 +163,22 @@ const loadingDeleteReferences = ref(false);
 const actionsMenu = ref(null);
 
 const type = computed(() => route.query.type || 'category');
-const actionItems = [
+const actionItems = computed(() => [
     {
-        label: 'Изменить',
+        label: t('global.buttons.edit'),
         icon: 'pi pi-pencil',
         command: () => {
             editReference(selectedReference.value);
         }
     },
     {
-        label: 'Удалить',
+        label: t('global.buttons.delete'),
         icon: 'pi pi-trash',
         command: () => {
             confirmDeleteReference(selectedReference.value);
         }
     }
-];
+]);
 function openActionsMenu(event, reference) {
     selectedReference.value = reference;
     actionsMenu.value.toggle(event);
@@ -215,7 +225,7 @@ async function loadReferences() {
         total.value = response.data.data.total;
 
     } catch (error) {
-        console.error('Ответ ошибки:', error.response?.data);
+        console.error(error.response?.data);
         references.value = [];
         total.value = 0;
     } finally {
@@ -278,7 +288,7 @@ async function destroyReference() {
         toast.add({
             severity: 'success',
             summary: 'Успешно',
-            detail: response.data.message || 'Запись удалена',
+            detail: response.data.message || t('global.messages.deleted'),
             life: 3000
         });
 
@@ -286,9 +296,7 @@ async function destroyReference() {
         reference.value = null;
         await loadReferences();
     } catch (error) {
-        console.error('Ошибка удаления:', error);
-        console.error('Статус:', error.response?.status);
-        console.error('Ответ backend:', error.response?.data);
+        console.error(error.response?.data);
 
         toast.add({
             severity: 'error',
@@ -337,9 +345,7 @@ async function destroyReferences() {
 
         await loadReferences();
     } catch (error) {
-        console.error('Ошибка массового удаления:', error);
-        console.error('Статус:', error.response?.status);
-        console.error('Ответ backend:', error.response?.data);
+        console.error(error.response?.data);
 
         toast.add({
             severity: 'error',
