@@ -10,7 +10,7 @@
 
             <span>
                 {{
-                    t('directories.success.deleteSelected', {
+                    t('global.messages.confirm_delete_selected', {
                         count: count
                     })
                 }}

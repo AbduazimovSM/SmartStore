@@ -1,13 +1,13 @@
 <template>
-    <Dialog v-model:visible="dialogStore.visible" maximizable :style="{ width: '450px' }" :header="dialogTitle" modal
+    <Dialog v-model:visible="dialogStore.visible" maximizable :style="{ width: '450px' }" :header="t('references.model.dialog.title_reference')" modal
         class="p-fluid">
         <div>
             <FloatLabel variant="on" class="mt-2">
                 <InputText id="name" v-model.trim="reference.name" autofocus :invalid="submitted && !reference.name"
                     fluid />
-                <label for="name">Наименование</label>
+                <label for="name">{{t('references.model.table.name')}}</label>
             </FloatLabel>
-            <small v-if="submitted && !reference.name" class="p-error"> Наименование обязательно</small>
+            <small v-if="submitted && !reference.name" class="p-error">{{ t('global.messages.required') }}</small>
         </div>
 
         <div v-if="dialogStore.type === 'category'" class="field">
@@ -15,7 +15,7 @@
 
                 <AppTreeSelect v-model="reference.parent_id" :loader="loadCategories"/>
                 <label for="parent_id">
-                    Родительская категория
+                    {{t('references.model.table.parent_category')}}
                 </label>
             </FloatLabel>
         </div>
@@ -23,14 +23,14 @@
         <div v-if="dialogStore.type === 'unit'" class="field">
             <FloatLabel variant="on" class="mt-4">
                 <InputText id="short_name" v-model.trim="reference.short_name" fluid />
-                <label for="short_name"> Краткое название</label>
+                <label for="short_name">{{t('references.model.table.short_name')}}</label>
             </FloatLabel>
         </div>
 
         <div class="field">
             <FloatLabel variant="on" class="mt-4">
                 <Textarea id="description" v-model="reference.description" rows="3" fluid />
-                <label for="description">Описание</label>
+                <label for="description">{{t('references.model.table.description')}}</label>
             </FloatLabel>
         </div>
 
@@ -38,13 +38,13 @@
             <FloatLabel variant="on" class="mt-4">
                 <Select id="status" v-model="reference.status" :options="statuses" option-label="label"
                     option-value="value" fluid />
-                <label for="status"> Статус</label>
+                <label for="status"> {{t('references.model.table.status')}}</label>
             </FloatLabel>
         </div>
 
         <div class="reference-dialog-actions">
-            <Button label="Отмена" icon="pi pi-times" text :disabled="saving" @click="dialogStore.close" />
-            <Button label="Сохранить" icon="pi pi-check" text :loading="saving" :disabled="saving"
+            <Button :label="t('global.buttons.cancel')" icon="pi pi-times" text :disabled="saving" @click="dialogStore.close" />
+            <Button :label="t('global.buttons.save')" icon="pi pi-check" text :loading="saving" :disabled="saving"
                 @click="saveReference" />
         </div>
     </Dialog>
@@ -54,6 +54,8 @@
 import { computed, ref, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import AppTreeSelect from '@/components/AppTreeSelect.vue';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 import { getReferences, createReference, updateReference } from '@/modules/references/api/reference.api';
 import { useReferenceDialogStore } from '@/modules/references/stores/referenceDialog.store';
@@ -64,16 +66,16 @@ const reference = ref({});
 const submitted = ref(false);
 const saving = ref(false);
 
-const statuses = [
-    { label: 'Активен', value: true },
-    { label: 'Неактивен', value: false }
-];
-
-const dialogTitle = computed(() => {
-    return reference.value.id
-        ? 'Редактировать'
-        : 'Добавить';
-});
+const statuses = computed(() => [
+    {
+        label: t('global.status.active'),
+        value: true
+    },
+    {
+        label: t('global.status.inactive'),
+        value: false
+    }
+]);
 
 function emptyReference() {
     return {
@@ -129,7 +131,6 @@ async function saveReference() {
     if (!reference.value.name?.trim()) {
         return;
     }
-    console.log('REFERENCE:', reference.value);
 
     saving.value = true;
 

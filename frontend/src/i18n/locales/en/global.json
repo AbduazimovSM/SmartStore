@@ -27,8 +27,8 @@
     },
 
     "messages": {
-        "confirm_delete": "Are you sure you want to delete the record “{name}”?",
-        "confirm_delete_selected": "Are you sure you want to delete the selected records ({count})?",
+        "confirm_delete": "Are you sure you want to delete the record ",
+        "confirm_delete_selected": "Are you sure you want to delete the ({count}) selected records ?",
         "no_data": "No data",
         "loading": "Loading…",
         "required": "Required field"

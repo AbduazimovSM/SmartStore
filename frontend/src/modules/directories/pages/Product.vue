@@ -272,7 +272,7 @@ async function destroyProduct() {
 
         toast.add({
             severity: 'success',
-            summary: t('global.messages.saved'),
+            summary: t('global.success.saved'),
             detail:
                 response.data.message ||
                 t('global.messages.deleted'),
@@ -287,10 +287,10 @@ async function destroyProduct() {
     } catch (error) {
         toast.add({
             severity: 'error',
-            summary: t('global.messages.error'),
+            summary: t('global.errors.error'),
             detail:
                 error.response?.data?.message ||
-                t('directories.errors.deleteFailed'),
+                t('global.errors.delete_failed'),
             life: 3000
         });
 
@@ -320,7 +320,7 @@ async function destroyProducts() {
             summary: t('global.messages.deleted'),
             detail:
                 response.data.message ||
-                t('directories.success.deleteSelected'),
+                t('global.success.delete_selected'),
             life: 3000
         });
 
@@ -335,7 +335,7 @@ async function destroyProducts() {
             summary: t('global.messages.error'),
             detail:
                 error.response?.data?.message ||
-               t('directories.errors.deleteSelectedFailed'),
+               t('global.errors.delete_selected_failed'),
             life: 3000
         });
 
