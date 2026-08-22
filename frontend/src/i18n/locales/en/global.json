@@ -34,6 +34,14 @@
         "required": "Required field"
     },
 
+    "toast": {
+        "success": "Success",
+        "error": "Error",
+        "warning": "Warning",
+        "info": "Information",
+        "confirmation": "Confirmation"
+    },
+
     "success": {
         "created": "Record created successfully",
         "updated": "Record updated successfully",

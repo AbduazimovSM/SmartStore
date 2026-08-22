@@ -1,11 +1,11 @@
 <template>
-    <Dialog v-model:visible="dialogStore.visible" maximizable :style="{ width: '450px' }" :header="t('references.model.dialog.title_reference')" modal
-        class="p-fluid">
+    <Dialog v-model:visible="dialogStore.visible" maximizable :style="{ width: '450px' }"
+        :header="t('references.model.dialog.title_reference')" modal class="p-fluid">
         <div>
             <FloatLabel variant="on" class="mt-2">
                 <InputText id="name" v-model.trim="reference.name" autofocus :invalid="submitted && !reference.name"
                     fluid />
-                <label for="name">{{t('references.model.table.name')}}</label>
+                <label for="name">{{ t('references.model.table.name') }}</label>
             </FloatLabel>
             <small v-if="submitted && !reference.name" class="p-error">{{ t('global.messages.required') }}</small>
         </div>
@@ -13,9 +13,9 @@
         <div v-if="dialogStore.type === 'category'" class="field">
             <FloatLabel variant="on" class="mt-4">
 
-                <AppTreeSelect v-model="reference.parent_id" :loader="loadCategories"/>
+                <AppTreeSelect v-model="reference.parent_id" :loader="loadCategories" />
                 <label for="parent_id">
-                    {{t('references.model.table.parent_category')}}
+                    {{ t('references.model.table.parent_category') }}
                 </label>
             </FloatLabel>
         </div>
@@ -23,14 +23,14 @@
         <div v-if="dialogStore.type === 'unit'" class="field">
             <FloatLabel variant="on" class="mt-4">
                 <InputText id="short_name" v-model.trim="reference.short_name" fluid />
-                <label for="short_name">{{t('references.model.table.short_name')}}</label>
+                <label for="short_name">{{ t('references.model.table.short_name') }}</label>
             </FloatLabel>
         </div>
 
         <div class="field">
             <FloatLabel variant="on" class="mt-4">
                 <Textarea id="description" v-model="reference.description" rows="3" fluid />
-                <label for="description">{{t('references.model.table.description')}}</label>
+                <label for="description">{{ t('references.model.table.description') }}</label>
             </FloatLabel>
         </div>
 
@@ -38,12 +38,13 @@
             <FloatLabel variant="on" class="mt-4">
                 <Select id="status" v-model="reference.status" :options="statuses" option-label="label"
                     option-value="value" fluid />
-                <label for="status"> {{t('references.model.table.status')}}</label>
+                <label for="status"> {{ t('references.model.table.status') }}</label>
             </FloatLabel>
         </div>
 
         <div class="reference-dialog-actions">
-            <Button :label="t('global.buttons.cancel')" icon="pi pi-times" text :disabled="saving" @click="dialogStore.close" />
+            <Button :label="t('global.buttons.cancel')" icon="pi pi-times" text :disabled="saving"
+                @click="dialogStore.close" />
             <Button :label="t('global.buttons.save')" icon="pi pi-check" text :loading="saving" :disabled="saving"
                 @click="saveReference" />
         </div>
@@ -135,35 +136,33 @@ async function saveReference() {
     saving.value = true;
 
     try {
-        let response;
-
         if (reference.value.id) {
-            response = await updateReference(
-                reference.value.id,
-                reference.value
-            );
+            await updateReference(reference.value.id, reference.value);
+            toast.add({
+                severity: 'success',
+                summary: t('global.toast.success'),
+                detail: t('global.success.updated'),
+                life: 3000
+            });
         } else {
-            response = await createReference(
-                reference.value
-            );
+            await createReference(reference.value);
+            toast.add({
+                severity: 'success',
+                summary: t('global.toast.success'),
+                detail: t('global.success.created'),
+                life: 3000
+            });
         }
 
-        toast.add({
-            severity: 'success',
-            summary: 'Успешно',
-            detail: response.data.message,
-            life: 3000
-        });
+
 
         dialogStore.saved();
 
     } catch (error) {
         toast.add({
             severity: 'error',
-            summary: 'Ошибка',
-            detail:
-                error.response?.data?.message ||
-                'Не удалось сохранить запись',
+            summary: t('global.toast.error'),
+            detail: t('global.errors.save_failed'),
             life: 3000
         });
     } finally {
